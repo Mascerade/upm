@@ -1,6 +1,7 @@
 """
 Created by Jason Acheampong
 * UPM = Unsupervised Product Matching (Using Combinations and Permutations)
+* UPM[x] = Unsupervised Product Matching Page X
 """
 
 class Product():
@@ -32,3 +33,19 @@ class Product():
         # Going to have each combination and then a list of the attributes for each combination
         # Each combination should have its signature, frequency of the combination, and the distance accumulator 
         self.combinations = {}
+
+    # Needed step as defined on UPM[4]
+    # Aids in helping the similarity equations to be more accurate
+    def puncuation_removal(self, word):
+        punctuations = "';:]}[{|}]()`~-_&!@#$%^*" + '"'
+        for index, char in enumerate(word):
+            if char in punctuations:
+                del word[index]
+
+    # Just appends each individual word to the list of tokens from the title. UPM[4]
+    def generate_tokens(self):
+        self.tokens = self.title.split(" ")
+
+    # Semantics are used to add weights to each individual token. UPM[4]
+    def define_semantics(self, item_model = None):
+        pass
