@@ -26,26 +26,93 @@ class Product():
         
         Normal: All the other tokens of the title
         """
-        # For this part of organizing data, if we already have the item model, then we can just search the
 
-        self.semantics = {}
+        # Measurement lexicon for determining if token is a unit of measurement
+        self.attribute_lexicon = ["bytes", "hz", "bps", "meters", "m", "gb", "mb", "tb", "kb", "km", "kilometers"]
+
+        # For this part of organizing data, if we already have the item model, then we can just search the
+        self.semantics_list = []
+        self.semantics_lexicon = {}
 
         # Going to have each combination and then a list of the attributes for each combination
         # Each combination should have its signature, frequency of the combination, and the distance accumulator 
         self.combinations = {}
 
+        # Punctuations to get rid of
+        self.punctuations = ";:]}[{|}]()`~&!@#$%^*"
+
     # Needed step as defined on UPM[4]
     # Aids in helping the similarity equations to be more accurate
     def puncuation_removal(self, word):
-        punctuations = "';:]}[{|}]()`~-_&!@#$%^*" + '"'
-        for index, char in enumerate(word):
-            if char in punctuations:
-                del word[index]
+        word_list = list(word)
+        for index, char in enumerate(word_list):
+            if char in self.punctuations:
+                del(word_list[index])
+        return "".join(word_list)
 
     # Just appends each individual word to the list of tokens from the title. UPM[4]
     def generate_tokens(self):
-        self.tokens = self.title.split(" ")
+        self.tokens = self.title.lower().split(" ")
+        for index, token in enumerate(self.tokens):
+            if token in self.punctuations + "_-":
+                del(self.tokens[index])
+
+    # Combines tokens that are part of the attribute to get better results in the similitary formula
+    def token_concatenater(self):
+        for index, token in enumerate(self.tokens):
+            if token in self.attribute_lexicon:
+                self.tokens[index - 1:index + 1] = ["".join(self.tokens[index - 1:index + 1])]
+
+    # Used to determine whether or not a token is classified as an item_model
+    def item_model_identifier(self, token, item_model = None):
+        if item_model is None:
+            if self.attribute_identifier(token):
+                return False
+
+            if token.isdigit():
+                return True
+            else:
+                digit_counter = 0
+                for x in token:
+                    try:
+                        digit_counter += int(x)
+                    except:
+                        pass
+                if digit_counter > 0:
+                    return True
+                
+                else:
+                    return False
+
+    # Used to determine whether or not
+    def attribute_identifier(self, token):
+        for attribute in self.attribute_lexicon:
+            if attribute in token:
+                return True
+        return False
 
     # Semantics are used to add weights to each individual token. UPM[4]
-    def define_semantics(self, item_model = None):
-        pass
+    def semantics(self):
+        for index, token in enumerate(self.tokens):
+            self.semantics_list.append("")
+            if self.attribute_identifier(token):
+                self.semantics_list[index] = "A"
+            
+            elif self.item_model_identifier(token):
+                self.semantics_list[index] = "I"
+            
+            else:
+                self.semantics_list[index] = "N"
+
+        self.semantics_lexicon = dict(zip(self.tokens, self.semantics_list))
+
+    def execute(self):
+        self.generate_tokens()
+        self.token_concatenater()
+        self.semantics()
+
+
+product = Product("Amazon", "ASUS VivoBook F510UA 15.6” Full HD Nanoedge Laptop, Intel Core i5-8250U Processor, 8 GB DDR4 RAM, 1 TB HDD, USB-C, Fingerprint, Windows 10 Home - F510UA-AH51, Star Gray")
+product.title = product.puncuation_removal(product.title)
+product.execute()
+print(product.semantics_lexicon)
