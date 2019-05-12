@@ -28,7 +28,7 @@ class Product():
         """
 
         # Measurement lexicon for determining if token is a unit of measurement
-        self.attribute_lexicon = ["bytes", "hz", "bps", "meters", "m", "gb", "mb", "tb", "kb", "km", "kilometers", '"', '”']
+        self.attribute_lexicon = ["bytes", "hz", "bps", "meters", "m", "gb", "mb", "tb", "kb", "km", "kilometers", '"', '”', "'"]
 
         # For this part of organizing data, if we already have the item model, then we can just search the
         self.semantics_list = []
