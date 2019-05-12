@@ -106,6 +106,7 @@ class Product():
 
         self.semantics_lexicon = dict(zip(self.tokens, self.semantics_list))
 
+    # Executes all of the necessary methods in order to generate the semantics and the necessary data types for the product
     def execute(self):
         self.generate_tokens()
         self.token_concatenater()
