@@ -40,6 +40,7 @@ class Product():
 
         # Punctuations to get rid of
         self.punctuations = ";:]}[{|}]()`~&!@#$%^*"
+        self.execute()
 
     # Needed step as defined on UPM[4]
     # Aids in helping the similarity equations to be more accurate
@@ -93,13 +94,15 @@ class Product():
 
     # Semantics are used to add weights to each individual token. UPM[4]
     def semantics(self):
+        item_model_counter = 1
         for index, token in enumerate(self.tokens):
             self.semantics_list.append("")
             if self.attribute_identifier(token):
                 self.semantics_list[index] = "A"
             
             elif self.item_model_identifier(token):
-                self.semantics_list[index] = "I"
+                self.semantics_list[index] = "I" + str(item_model_counter)
+                item_model_counter += 1
             
             else:
                 self.semantics_list[index] = "N"
@@ -108,12 +111,11 @@ class Product():
 
     # Executes all of the necessary methods in order to generate the semantics and the necessary data types for the product
     def execute(self):
+        self.title = self.puncuation_removal(self.title)
         self.generate_tokens()
         self.token_concatenater()
         self.semantics()
 
 
 product = Product("Amazon", "ASUS VivoBook F510UA 15.6” Full HD Nanoedge Laptop, Intel Core i5-8250U Processor, 8 GB DDR4 RAM, 1 TB HDD, USB-C, Fingerprint, Windows 10 Home - F510UA-AH51, Star Gray")
-product.title = product.puncuation_removal(product.title)
-product.execute()
 print(product.semantics_lexicon)
