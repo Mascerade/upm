@@ -3,8 +3,10 @@ Created by Jason Acheampong
 * UPM = Unsupervised Product Matching (Using Combinations and Permutations)
 * UPM[x] = Unsupervised Product Matching Page X
 """
-
+from itertools import combinations
+import time
 class Product():
+    tokens_lexicon = []
     def __init__(self, retailer, title):
         self.retailer = retailer
         self.title = title
@@ -109,13 +111,24 @@ class Product():
 
         self.semantics_lexicon = dict(zip(self.tokens, self.semantics_list))
 
+    # Generate all the possible combinations of the token lexicon from 2 to 5
+    def combinations_generator(self, lexicon):
+        length = len(lexicon)
+        combinations_lexicon = []
+        for x in range(length):
+            if x < 7:
+                for combination in combinations(lexicon, x + 1):
+                    combinations_lexicon.append(combination)
+        return combinations_lexicon
+
     # Executes all of the necessary methods in order to generate the semantics and the necessary data types for the product
     def execute(self):
         self.title = self.puncuation_removal(self.title)
         self.generate_tokens()
         self.token_concatenater()
         self.semantics()
+        self.combinations = self.combinations_generator(self.tokens)
 
-
+time1 = time.time()
 product = Product("Amazon", "ASUS VivoBook F510UA 15.6” Full HD Nanoedge Laptop, Intel Core i5-8250U Processor, 8 GB DDR4 RAM, 1 TB HDD, USB-C, Fingerprint, Windows 10 Home - F510UA-AH51, Star Gray")
-print(product.semantics_lexicon)
+print(time.time() - time1)
