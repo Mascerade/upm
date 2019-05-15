@@ -138,7 +138,7 @@ class Product():
         length = len(lexicon)
         combinations_lexicon = []
         for x in range(length):
-            if x < 7:
+            if x < 6:
                 for combination in combinations(lexicon, x + 1):
                     combinations_lexicon.append(combination)
         return combinations_lexicon
@@ -151,11 +151,13 @@ class Product():
         self.token_object_generater()
         self.combinations = self.combinations_generator(self.tokens)
 
-
+time1 = time.time()
 product = Product("Amazon", "ASUS VivoBook F510UA 15.6” Full HD Nanoedge Laptop, Intel Core i5-8250U Processor, 8 GB DDR4 RAM, 1 TB HDD, USB-C, Fingerprint, Windows 10 Home - F510UA-AH51, Star Gray")
-product2 = Product("Amazon", "ASUS VivoBook F510UA 15.6” Full HD Nanoedge Laptop, Intel Core i5-8250U Processor, 8 GB DDR4 RAM, 1 TB HDD, USB-C, Fingerprint, Windows 10 Home - F510UA-AH51, Star Gray")
-product3 = Product("SOMETHING", "SOMETHING your mum idk man")
-
+product2 = Product("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,")
+product3 = Product("Newegg", "ASUS VivoBook Ultrabook: Core i5-7200U, 8GB RAM, 1TB HDD, 15.6” Full HD, Windows 10")
+product4 = Product("Newegg", "2018 ASUS VivoBook F510UA Full HD Ultra-Narrow Laptop | Intel Core i5-8250U | 8GB RAM | 1TB HDD | USB-C | NanoEdge anti-glare Display | Fingerprint | HDMI | Windows 10 | Star Gray")
+product5 = Product("Newegg", "ASUS VivoBook F510UA Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader, Windows 10")
+product6 = Product("Newegg", "ASUS VivoBook F510UA Thin and Lightweight FHD WideView Laptop, 8th Gen Intel ...")
+print(time.time() - time1)
 print(product.Token_Objects)
 print(product2.Token_Objects)
-print(product3.Token_Objects)
