@@ -14,6 +14,9 @@ class Product():
 
         # Essentially each word in a product's title
         self.tokens = []
+
+        # List of Token Objects
+        self.Tokens = []
         
         # For each token, have the semantics of the token based on UPM[4]
         """
@@ -60,6 +63,7 @@ class Product():
         for index, token in enumerate(self.tokens):
             if token in self.punctuations + "_-":
                 del(self.tokens[index])
+        self.token_concatenater()
 
     # Combines tokens that are part of the attribute to get better results in the similitary formula
     def token_concatenater(self):
@@ -130,7 +134,6 @@ class Product():
     def execute(self):
         self.title = self.puncuation_removal(self.title)
         self.generate_tokens()
-        self.token_concatenater()
         self.semantics()
         self.combinations = self.combinations_generator(self.tokens)
 
