@@ -3,6 +3,9 @@ Created by Jason Acheampong
 * UPM = Unsupervised Product Matching (Using Combinations and Permutations)
 * UPM[x] = Unsupervised Product Matching Page X
 """
+
+""" Local Imports """
+from Token import Token
 from itertools import combinations
 import time
 class Product():
@@ -16,7 +19,7 @@ class Product():
         self.tokens = []
 
         # List of Token Objects
-        self.Tokens = []
+        self.Token_Objects = []
         
         # For each token, have the semantics of the token based on UPM[4]
         """
@@ -116,6 +119,16 @@ class Product():
 
         self.semantics_lexicon = dict(zip(self.tokens, self.semantics_list))
 
+    # Generate token objects based on the semantics_lexicon
+    def token_object_generater(self):
+        for key, value in self.semantics_lexicon.items():
+            id = 0
+            if len(Token.total_tokens) > 0:
+                id = Token.total_tokens[len(Token.total_tokens) - 1].id + 1
+            token = Token(key, id, value)
+            result = token.add()
+            self.Token_Objects.append(result)
+
     # Generates a unique signature for a combination
     def combination_signature_generater(self):
         pass
@@ -135,7 +148,14 @@ class Product():
         self.title = self.puncuation_removal(self.title)
         self.generate_tokens()
         self.semantics()
+        self.token_object_generater()
         self.combinations = self.combinations_generator(self.tokens)
 
 
 product = Product("Amazon", "ASUS VivoBook F510UA 15.6” Full HD Nanoedge Laptop, Intel Core i5-8250U Processor, 8 GB DDR4 RAM, 1 TB HDD, USB-C, Fingerprint, Windows 10 Home - F510UA-AH51, Star Gray")
+product2 = Product("Amazon", "ASUS VivoBook F510UA 15.6” Full HD Nanoedge Laptop, Intel Core i5-8250U Processor, 8 GB DDR4 RAM, 1 TB HDD, USB-C, Fingerprint, Windows 10 Home - F510UA-AH51, Star Gray")
+product3 = Product("SOMETHING", "SOMETHING your mum idk man")
+
+print(product.Token_Objects)
+print(product2.Token_Objects)
+print(product3.Token_Objects)

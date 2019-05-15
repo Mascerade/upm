@@ -6,29 +6,25 @@ Created by Jason Acheampong
 
 class Token():
     total_tokens = []
-    def __init__(self, token, token_id, semantic):
+    def __init__(self, value, token_id, semantic):
         self.frequency = 0
-        self.token = token
+        self.value = value
         self.id = token_id
         self.semantic = semantic
         
     
     def check(self):
-        print(Token.total_tokens)
         for token in Token.total_tokens:
-            if self.token != token.token:
+            if self.value != token.value:
                 continue
             else:
-                return True
-        return False
+                return token.id
+        return -1
 
     def add(self):
-        if self.check() == False:
+        result = self.check()
+        if result == -1:
             Token.total_tokens.append(self)
-            return True
+            return self.id
         else:
-            return False
-
-token = Token("hello", 2, "A")
-print(token.add())
-print(Token.total_tokens)
+            return result
