@@ -7,6 +7,7 @@ from itertools import combinations
 import time
 class Product():
     tokens_lexicon = []
+    combinations_lexicon = []
     def __init__(self, retailer, title):
         self.retailer = retailer
         self.title = title
@@ -38,7 +39,7 @@ class Product():
 
         # Going to have each combination and then a list of the attributes for each combination
         # Each combination should have its signature, frequency of the combination, and the distance accumulator 
-        self.combinations = {}
+        self.combinations = []
 
         # Punctuations to get rid of
         self.punctuations = ";:]}[{|}]()`~&!@#$%^*"
@@ -111,6 +112,10 @@ class Product():
 
         self.semantics_lexicon = dict(zip(self.tokens, self.semantics_list))
 
+    # Generates a unique signature for a combination
+    def combination_signature_generater(self):
+        pass
+
     # Generate all the possible combinations of the token lexicon from 2 to 5
     def combinations_generator(self, lexicon):
         length = len(lexicon)
@@ -129,6 +134,5 @@ class Product():
         self.semantics()
         self.combinations = self.combinations_generator(self.tokens)
 
-time1 = time.time()
+
 product = Product("Amazon", "ASUS VivoBook F510UA 15.6” Full HD Nanoedge Laptop, Intel Core i5-8250U Processor, 8 GB DDR4 RAM, 1 TB HDD, USB-C, Fingerprint, Windows 10 Home - F510UA-AH51, Star Gray")
-print(time.time() - time1)
