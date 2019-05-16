@@ -25,6 +25,6 @@ class Token():
         result = self.check()
         if result == -1:
             Token.total_tokens.append(self)
-            return self.id
+            return self
         else:
-            return result
+            return Token.total_tokens[result]

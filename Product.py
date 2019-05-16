@@ -6,8 +6,11 @@ Created by Jason Acheampong
 
 """ Local Imports """
 from Token import Token
+
+""" Outside Imports """
 from itertools import combinations
 import time
+
 class Product():
     tokens_lexicon = []
     combinations_lexicon = []
@@ -150,6 +153,7 @@ class Product():
         self.semantics()
         self.token_object_generater()
         self.combinations = self.combinations_generator(self.tokens)
+
 
 time1 = time.time()
 product = Product("Amazon", "ASUS VivoBook F510UA 15.6” Full HD Nanoedge Laptop, Intel Core i5-8250U Processor, 8 GB DDR4 RAM, 1 TB HDD, USB-C, Fingerprint, Windows 10 Home - F510UA-AH51, Star Gray")
