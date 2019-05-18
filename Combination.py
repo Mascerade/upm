@@ -5,6 +5,7 @@ Created by Jason Acheampong
 """
 from collections import Counter
 
+
 class Combination():
     total_combinations = []
     def __init__(self, combination_id, value):
@@ -16,7 +17,7 @@ class Combination():
         # Checks if a combination is already in the total_combinations list
         for combination in Combination.total_combinations:
             if Counter(combination.value) == Counter(self.value):
-                return combination.id 
+                return combination
 
         # -1 represents if the combination was not found
         return -1

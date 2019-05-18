@@ -13,9 +13,11 @@ from itertools import combinations
 from collections import Counter
 import time
 
+
 class Product():
     tokens_lexicon = []
     combinations_lexicon = []
+
     def __init__(self, retailer, title):
         self.retailer = retailer
         self.title = title
@@ -61,7 +63,7 @@ class Product():
 
     # Needed step as defined on UPM[4]
     # Aids in helping the similarity equations to be more accurate
-    def puncuation_removal(self, word):
+    def punctuation_removal(self, word):
         word_list = list(word)
         for index, char in enumerate(word_list):
             if char in self.punctuations:
@@ -74,10 +76,10 @@ class Product():
         for index, token in enumerate(self.tokens):
             if token in self.punctuations + "_-":
                 del(self.tokens[index])
-        self.token_concatenater()
+        self.token_concatenation()
 
-    # Combines tokens that are part of the attribute to get better results in the similitary formula
-    def token_concatenater(self):
+    # Combines tokens that are part of the attribute to get better results in the similarity formula
+    def token_concatenation(self):
         for index, token in enumerate(self.tokens):
             if token in self.attribute_lexicon:
                 self.tokens[index - 1:index + 1] = ["".join(self.tokens[index - 1:index + 1])]
@@ -128,7 +130,7 @@ class Product():
         self.semantics_lexicon = dict(zip(self.tokens, self.semantics_list))
 
     # Generate token objects based on the semantics_lexicon
-    def token_object_generater(self):
+    def token_object_generator(self):
         for key, value in self.semantics_lexicon.items():
             id = 0
             if len(Token.total_tokens) > 0:
@@ -161,15 +163,15 @@ class Product():
         self.tokens = None
         self.semantics_list = None
         self.semantics_lexicon = None
+        self.combinations = None
 
-    # Executes all of the necessary methods in order to generate the semantics and the necessary data types for the product
+    # Executes all necessary methods in order to generate the semantics and the necessary data types for the product
     def execute(self):
-        self.title = self.puncuation_removal(self.title)
+        self.title = self.punctuation_removal(self.title)
         self.generate_tokens()
         self.semantics()
-        self.token_object_generater()
-        self.combinations = self.combinations_generator(self.tokens)
-        print(len(self.combinations))
+        self.token_object_generator()
+        self.combinations = self.combinations_generator(self.Token_Objects)
         self.combination_object_generator()
         self.clear_temp_variables()
 

@@ -4,6 +4,7 @@ Created by Jason Acheampong
 * UPM[x] = Unsupervised Product Matching Page X
 """
 
+
 class Token():
     total_tokens = []
     def __init__(self, value, token_id, semantic):
