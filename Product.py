@@ -6,20 +6,30 @@ Created by Jason Acheampong
 
 """ Local Imports """
 from Token import Token
+from Combination import Combination
+
+""" Outside Imports """
 from itertools import combinations
+from collections import Counter
 import time
+
+
 class Product():
     tokens_lexicon = []
     combinations_lexicon = []
+
     def __init__(self, retailer, title):
         self.retailer = retailer
         self.title = title
 
-        # Essentially each word in a product's title
+        # Essentially each word in a product's title; Temporary Variable
         self.tokens = []
 
         # List of Token Objects
         self.Token_Objects = []
+
+        # List of Combination Objects
+        self.Combination_Objects = []
         
         # For each token, have the semantics of the token based on UPM[4]
         """
@@ -39,7 +49,7 @@ class Product():
         # Measurement lexicon for determining if token is a unit of measurement
         self.attribute_lexicon = ["bytes", "hz", "bps", "meters", "m", "gb", "mb", "tb", "kb", "km", "kilometers", '"', '”', "'"]
 
-        # For this part of organizing data, if we already have the item model, then we can just search the
+        # TEMPORARY VARIABLES for storing the semantics of each token and ziping them together with the tokens list
         self.semantics_list = []
         self.semantics_lexicon = {}
 
@@ -53,7 +63,7 @@ class Product():
 
     # Needed step as defined on UPM[4]
     # Aids in helping the similarity equations to be more accurate
-    def puncuation_removal(self, word):
+    def punctuation_removal(self, word):
         word_list = list(word)
         for index, char in enumerate(word_list):
             if char in self.punctuations:
@@ -66,10 +76,10 @@ class Product():
         for index, token in enumerate(self.tokens):
             if token in self.punctuations + "_-":
                 del(self.tokens[index])
-        self.token_concatenater()
+        self.token_concatenation()
 
-    # Combines tokens that are part of the attribute to get better results in the similitary formula
-    def token_concatenater(self):
+    # Combines tokens that are part of the attribute to get better results in the similarity formula
+    def token_concatenation(self):
         for index, token in enumerate(self.tokens):
             if token in self.attribute_lexicon:
                 self.tokens[index - 1:index + 1] = ["".join(self.tokens[index - 1:index + 1])]
@@ -120,7 +130,7 @@ class Product():
         self.semantics_lexicon = dict(zip(self.tokens, self.semantics_list))
 
     # Generate token objects based on the semantics_lexicon
-    def token_object_generater(self):
+    def token_object_generator(self):
         for key, value in self.semantics_lexicon.items():
             id = 0
             if len(Token.total_tokens) > 0:
@@ -128,10 +138,15 @@ class Product():
             token = Token(key, id, value)
             result = token.add()
             self.Token_Objects.append(result)
-
-    # Generates a unique signature for a combination
-    def combination_signature_generater(self):
-        pass
+    
+    def combination_object_generator(self):
+        for combination in self.combinations:
+            id = 0
+            if len(Combination.total_combinations) > 0:
+                id = Combination.total_combinations[len(Combination.total_combinations) - 1].id + 1
+            combination = Combination(id, combination)
+            result = combination.add()
+            self.Combination_Objects.append(result)
 
     # Generate all the possible combinations of the token lexicon from 2 to 5
     def combinations_generator(self, lexicon):
@@ -143,21 +158,37 @@ class Product():
                     combinations_lexicon.append(combination)
         return combinations_lexicon
 
-    # Executes all of the necessary methods in order to generate the semantics and the necessary data types for the product
+    # Used to clear the variables labeled as TEMPORARY (self.tokens, self.semantics_list, self.semantics_lexicon)
+    def clear_temp_variables(self):
+        self.tokens = None
+        self.semantics_list = None
+        self.semantics_lexicon = None
+        self.combinations = None
+
+    # Executes all necessary methods in order to generate the semantics and the necessary data types for the product
     def execute(self):
-        self.title = self.puncuation_removal(self.title)
+        self.title = self.punctuation_removal(self.title)
         self.generate_tokens()
         self.semantics()
-        self.token_object_generater()
-        self.combinations = self.combinations_generator(self.tokens)
+        self.token_object_generator()
+        self.combinations = self.combinations_generator(self.Token_Objects)
+        self.combination_object_generator()
+        self.clear_temp_variables()
+
 
 time1 = time.time()
 product = Product("Amazon", "ASUS VivoBook F510UA 15.6” Full HD Nanoedge Laptop, Intel Core i5-8250U Processor, 8 GB DDR4 RAM, 1 TB HDD, USB-C, Fingerprint, Windows 10 Home - F510UA-AH51, Star Gray")
+<<<<<<< HEAD
 product2 = Product("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,")
 product3 = Product("Newegg", "ASUS VivoBook Ultrabook: Core i5-7200U, 8GB RAM, 1TB HDD, 15.6” Full HD, Windows 10")
 product4 = Product("Newegg", "2018 ASUS VivoBook F510UA Full HD Ultra-Narrow Laptop | Intel Core i5-8250U | 8GB RAM | 1TB HDD | USB-C | NanoEdge anti-glare Display | Fingerprint | HDMI | Windows 10 | Star Gray")
 product5 = Product("Newegg", "ASUS VivoBook F510UA Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader, Windows 10")
 product6 = Product("Newegg", "ASUS VivoBook F510UA Thin and Lightweight FHD WideView Laptop, 8th Gen Intel")
+=======
+# product2 = Product("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,")
+# product3 = Product("Newegg", "ASUS VivoBook Ultrabook: Core i5-7200U, 8GB RAM, 1TB HDD, 15.6” Full HD, Windows 10")
+# product4 = Product("Newegg", "2018 ASUS VivoBook F510UA Full HD Ultra-Narrow Laptop | Intel Core i5-8250U | 8GB RAM | 1TB HDD | USB-C | NanoEdge anti-glare Display | Fingerprint | HDMI | Windows 10 | Star Gray")
+# product5 = Product("Newegg", "ASUS VivoBook F510UA Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader, Windows 10")
+# product6 = Product("Newegg", "ASUS VivoBook F510UA Thin and Lightweight FHD WideView Laptop, 8th Gen Intel ...")
+>>>>>>> 6002e5572ef55f63740852b1a582ba25e4c2adce
 print(time.time() - time1)
-print(product.Token_Objects)
-print(product2.Token_Objects)
