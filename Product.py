@@ -157,7 +157,7 @@ product2 = Product("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and
 product3 = Product("Newegg", "ASUS VivoBook Ultrabook: Core i5-7200U, 8GB RAM, 1TB HDD, 15.6” Full HD, Windows 10")
 product4 = Product("Newegg", "2018 ASUS VivoBook F510UA Full HD Ultra-Narrow Laptop | Intel Core i5-8250U | 8GB RAM | 1TB HDD | USB-C | NanoEdge anti-glare Display | Fingerprint | HDMI | Windows 10 | Star Gray")
 product5 = Product("Newegg", "ASUS VivoBook F510UA Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader, Windows 10")
-product6 = Product("Newegg", "ASUS VivoBook F510UA Thin and Lightweight FHD WideView Laptop, 8th Gen Intel ...")
+product6 = Product("Newegg", "ASUS VivoBook F510UA Thin and Lightweight FHD WideView Laptop, 8th Gen Intel")
 print(time.time() - time1)
 print(product.Token_Objects)
 print(product2.Token_Objects)
