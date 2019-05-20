@@ -4,10 +4,14 @@ Created by Jason Acheampong
 * UPM[x] = Unsupervised Product Matching Page X
 """
 from collections import Counter
+from Token import Token
 
 
 class Combination():
     total_combinations = []
+    # For combinations of different lengths. Just made a bunch
+    dict_length = [{}, {}, {}, {},{}, {},{}, {},{}, {},{}, {},{}, {},{}, {},{}, {},{}, {}]
+
     def __init__(self, combination_id, value):
         self.frequency = 0
         self.value = value
@@ -15,9 +19,12 @@ class Combination():
 
     def check(self):
         # Checks if a combination is already in the total_combinations list
-        for combination in Combination.total_combinations:
-            if Counter(combination.value) == Counter(self.value):
-                return combination
+
+        # Hash the sorted tuple combination value
+        hash_value = hash(tuple(sorted(self.value)))
+        length = len(self.value)
+        if hash_value in Combination.dict_length[length].keys():
+            return Combination.dict_length[length][hash_value].id
 
         # -1 represents if the combination was not found
         return -1
@@ -29,7 +36,7 @@ class Combination():
         # If the combination is not found, append the combination to the combinations list
         if result == -1:
             Combination.total_combinations.append(self)
-            
+            Combination.dict_length[len(self.value)][hash(tuple(sorted(self.value)))] = self
             # Return the combination itself if it hasn't been encountered
             return self
 

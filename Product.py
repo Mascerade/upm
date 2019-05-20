@@ -140,6 +140,7 @@ class Product():
             self.Token_Objects.append(result)
     
     def combination_object_generator(self):
+        # Generates the combination objects 
         for combination in self.combinations:
             id = 0
             if len(Combination.total_combinations) > 0:
@@ -178,17 +179,10 @@ class Product():
 
 time1 = time.time()
 product = Product("Amazon", "ASUS VivoBook F510UA 15.6” Full HD Nanoedge Laptop, Intel Core i5-8250U Processor, 8 GB DDR4 RAM, 1 TB HDD, USB-C, Fingerprint, Windows 10 Home - F510UA-AH51, Star Gray")
-<<<<<<< HEAD
 product2 = Product("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,")
 product3 = Product("Newegg", "ASUS VivoBook Ultrabook: Core i5-7200U, 8GB RAM, 1TB HDD, 15.6” Full HD, Windows 10")
 product4 = Product("Newegg", "2018 ASUS VivoBook F510UA Full HD Ultra-Narrow Laptop | Intel Core i5-8250U | 8GB RAM | 1TB HDD | USB-C | NanoEdge anti-glare Display | Fingerprint | HDMI | Windows 10 | Star Gray")
 product5 = Product("Newegg", "ASUS VivoBook F510UA Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader, Windows 10")
-product6 = Product("Newegg", "ASUS VivoBook F510UA Thin and Lightweight FHD WideView Laptop, 8th Gen Intel")
-=======
-# product2 = Product("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,")
-# product3 = Product("Newegg", "ASUS VivoBook Ultrabook: Core i5-7200U, 8GB RAM, 1TB HDD, 15.6” Full HD, Windows 10")
-# product4 = Product("Newegg", "2018 ASUS VivoBook F510UA Full HD Ultra-Narrow Laptop | Intel Core i5-8250U | 8GB RAM | 1TB HDD | USB-C | NanoEdge anti-glare Display | Fingerprint | HDMI | Windows 10 | Star Gray")
-# product5 = Product("Newegg", "ASUS VivoBook F510UA Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader, Windows 10")
-# product6 = Product("Newegg", "ASUS VivoBook F510UA Thin and Lightweight FHD WideView Laptop, 8th Gen Intel ...")
->>>>>>> 6002e5572ef55f63740852b1a582ba25e4c2adce
+product6 = Product("Newegg", "ASUS VivoBook F510UA Thin and Lightweight FHD WideView Laptop, 8th Gen Intel ...")
 print(time.time() - time1)
+print(len(Combination.total_combinations))

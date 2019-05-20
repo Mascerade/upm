@@ -39,3 +39,6 @@ class Token():
             # If the token exists, add to the token's frequency and return that token
             Token.total_tokens[result].frequency += 1
             return Token.total_tokens[result]
+
+    def __lt__(self, other):
+        return self.id < other.id
