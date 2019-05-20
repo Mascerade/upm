@@ -12,6 +12,7 @@ from Combination import Combination
 from itertools import combinations
 from collections import Counter
 import time
+import threading
 
 
 class Product():
@@ -141,13 +142,17 @@ class Product():
     
     def combination_object_generator(self):
         # Generates the combination objects 
-        for combination in self.combinations:
-            id = 0
-            if len(Combination.total_combinations) > 0:
-                id = Combination.total_combinations[len(Combination.total_combinations) - 1].id + 1
-            combination = Combination(id, combination)
-            result = combination.add()
-            self.Combination_Objects.append(result)
+        thread_list = []
+        for x in self.combinations:
+            thread_list.append(threading.Thread(target=Combination.add_multiple, args=(x,)))
+        
+        for thread in thread_list:
+            thread.start()
+        
+        for thread in thread_list:
+            thread.join()
+        self.Combination_Objects = Combination.temp_combinations
+        Combination.temp_combinations = []
 
     # Generate all the possible combinations of the token lexicon from 2 to 5
     def combinations_generator(self, lexicon):
@@ -155,8 +160,10 @@ class Product():
         combinations_lexicon = []
         for x in range(length):
             if x < 6:
+                temp = []
                 for combination in combinations(lexicon, x + 1):
-                    combinations_lexicon.append(combination)
+                    temp.append(combination)
+                combinations_lexicon.append(temp)
         return combinations_lexicon
 
     # Used to clear the variables labeled as TEMPORARY (self.tokens, self.semantics_list, self.semantics_lexicon)
