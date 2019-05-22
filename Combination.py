@@ -6,6 +6,7 @@ Created by Jason Acheampong
 from collections import Counter
 from Token import Token
 import time
+import numpy as np
 
 
 class Combination():
@@ -18,6 +19,7 @@ class Combination():
         self.frequency = 0
         self.value = value
         self.id = combination_id
+        self.dacc = 0
 
     def check(self):
         # Checks if a combination is already in the total_combinations list

@@ -13,6 +13,9 @@ from itertools import combinations
 from collections import Counter
 import time
 import threading
+import numpy as np
+
+THREADING = False
 
 
 class Product():
@@ -136,34 +139,52 @@ class Product():
             id = 0
             if len(Token.total_tokens) > 0:
                 id = Token.total_tokens[len(Token.total_tokens) - 1].id + 1
-            token = Token(key, id, value)
+            token = Token(key, id, value, self.tokens_lexicon.index(key))
             result = token.add()
             self.Token_Objects.append(result)
     
     def combination_object_generator(self):
-        # Generates the combination objects 
-        thread_list = []
-        for x in self.combinations:
-            thread_list.append(threading.Thread(target=Combination.add_multiple, args=(x,)))
+        """ Generates the combination objects """
         
-        for thread in thread_list:
-            thread.start()
-        
-        for thread in thread_list:
-            thread.join()
-        self.Combination_Objects = Combination.temp_combinations
-        Combination.temp_combinations = []
+        # Threaded method of hashing and comparing
+        if THREADING:
+            thread_list = []
+            for x in self.combinations:
+                thread_list.append(threading.Thread(target=Combination.add_multiple, args=(np.array(x),)))
+            
+            for thread in thread_list:
+                thread.start()
+            
+            for thread in thread_list:
+                thread.join()
+            self.Combination_Objects = Combination.temp_combinations
+            Combination.temp_combinations = []
 
-    # Generate all the possible combinations of the token lexicon from 2 to 5
+        else:
+            for combination_value in np.array(self.combinations):
+                id = hash(tuple(sorted(combination_value)))
+                combination = Combination(id, combination_value)
+                result = combination.add()
+                self.Combination_Objects.append(result)
+
+    # Generate all the possible combinations of the token lexicon from 2 to 6
     def combinations_generator(self, lexicon):
+        COMBINATION_SIZE = 5
         length = len(lexicon)
         combinations_lexicon = []
-        for x in range(length):
-            if x < 6:
-                temp = []
-                for combination in combinations(lexicon, x + 1):
-                    temp.append(combination)
-                combinations_lexicon.append(temp)
+        if THREADING:
+            for x in range(length):
+                if x < COMBINATION_SIZE:
+                    temp = []
+                    for combination in combinations(lexicon, x + 1):
+                        temp.append(combination)
+                    combinations_lexicon.append(temp)
+        else:
+            for x in range(length):
+                if x < COMBINATION_SIZE:
+                    for combination in combinations(lexicon, x + 1):
+                        combinations_lexicon.append(combination)
+
         return combinations_lexicon
 
     # Used to clear the variables labeled as TEMPORARY (self.tokens, self.semantics_list, self.semantics_lexicon)
@@ -192,4 +213,4 @@ product4 = Product("Newegg", "2018 ASUS VivoBook F510UA Full HD Ultra-Narrow Lap
 product5 = Product("Newegg", "ASUS VivoBook F510UA Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader, Windows 10")
 product6 = Product("Newegg", "ASUS VivoBook F510UA Thin and Lightweight FHD WideView Laptop, 8th Gen Intel ...")
 print(time.time() - time1)
-print(len(Combination.total_combinations))
+print(Combination.total_combinations[1].frequency)

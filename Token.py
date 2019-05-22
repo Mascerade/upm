@@ -7,11 +7,12 @@ Created by Jason Acheampong
 
 class Token():
     total_tokens = []
-    def __init__(self, value, token_id, semantic):
+    def __init__(self, value, token_id, semantic, position):
         self.frequency = 0
         self.value = value
         self.id = token_id
         self.semantic = semantic
+        self.position = 0
         
     def check(self):
         # Checks if a token is already in the total_tokens list
