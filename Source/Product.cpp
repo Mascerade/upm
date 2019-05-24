@@ -94,6 +94,11 @@ class Product {
 				}
 			}
 		}
+
+		void generate_token_objects() {
+			// TODO: Have to create the token objects
+				// Must make sure there are no duplicates (use the hash id)
+		}
 };
 
 int main() {
