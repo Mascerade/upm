@@ -14,7 +14,7 @@ using namespace std;
 
 class Token;
 
-static const string attributes[] = {"bytes", "hz", "bps", "meters", "m", "gb", "mb", "tb", "kb", "km", "kilometers", "ddr4", "ddr3", "ram", "\"", "'"};
+static const string attributes[] = {"bytes", "hz", "bps", "meters", "m", "gb", "mb", "tb", "kb", "km", "kilometers", "\"", "'"};
 static const string punctuations = ",;:]}[{|}]()`~&!@#$%^*";
 vector<Token> all_tokens;
 
@@ -80,7 +80,23 @@ class Product {
 				}
 
 				transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
-				tokenized_title.push_back(temp);
+
+				if (tokenized_title.size() != 0) {
+					bool add = true;
+					for (string x : tokenized_title) {
+						if(temp == x) {
+							add = false;
+							break;
+						}
+					}
+					if (add)
+						tokenized_title.push_back(temp);
+				}
+
+				else {
+					tokenized_title.push_back(temp);
+				}
+
 			}
 		}
 
@@ -99,14 +115,18 @@ class Product {
 			// TODO: Have to create the token objects
 				// Must make sure there are no duplicates (use the hash id)
 		}
+
+		void execute() { 
+			generate_tokens();
+			token_concatenator();
+			for (string x : tokenized_title) {
+				cout << x << endl;
+			}
+		}
 };
 
 int main() {
-	Product amazon("Amazon", "ASUS VivoBook F510UA 15.6 Full HD Nanoedge Laptop, Intel Core i5-8250U Processor, 8 GB DDR4 RAM, 1 TB HDD, USB-C, Fingerprint, Windows 10 Home - F510UA-AH51, Star Gray");
-	amazon.generate_tokens();
-	amazon.token_concatenator();
-	for(string x:amazon.tokenized_title) {
-		cout << x << endl;
-	}
+	Product amazon("Amazon", "Asus ASUS VivoBook F510UA 15.6 Full HD Nanoedge Laptop, Intel Core i5-8250U Processor, 8 GB DDR4 RAM, 1 TB HDD, USB-C, Fingerprint, Windows 10 Home - F510UA-AH51, Star Gray");
+	amazon.execute();
 	return 1;
 }
