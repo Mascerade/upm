@@ -60,34 +60,45 @@ class Product {
 		
 		// The tokenized title
 		vector<string> tokenized_title;
-
+		
 		// Object Token pointers
-		vector<Token> Token;
+		vector<Token> Tokens;
 
 		Product(string vendor, string title) {
 			this->vendor = vendor;
 			this->title = title;
 		}
 
-		void token_concatenizer() {
-			for(string x:this->tokenized_title) {
-				cout << x << endl;
-			}
-		}
-
 		void generate_tokens() {
 			stringstream check1(this->title);
 			string temp;
 			while (getline(check1, temp, ' ')) {
+				remove_if(temp.begin(), temp.end(), ::isspace);
+				transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
 				tokenized_title.push_back(temp);
 			}
 		}
 
+		void token_concatenizer() {
+			int counter = 0;
+			for(string token : tokenized_title) {
+				for(string attribute : attributes) {
+					if(token == attribute) {
+						tokenized_title[counter - 1].append(attribute);
+						tokenized_title.erase(tokenized_title.begin() + counter);
+					}
+				}
+				counter++;
+			}
+		}
 };
 
 int main() {
-	Product amazon("Amazon", "Asus Viviobook");
+	Product amazon("Amazon", "Asus Viviobook 2 gb");
 	amazon.generate_tokens();
 	amazon.token_concatenizer();
+	for(string x:amazon.tokenized_title) {
+		cout << x << endl;
+	}
 	return 1;
 }

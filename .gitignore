@@ -2,5 +2,5 @@
 .vscode/
 .vs/
 /Compiled/
-__pychache__
+/__pychache/
 *.pyc
