@@ -14,7 +14,8 @@ using namespace std;
 
 class Token;
 
-static const string attributes[] = {"bytes", "hz", "bps", "meters", "m", "gb", "mb", "tb", "kb", "km", "kilometers", "\"", "”", "'"};
+static const string attributes[] = {"bytes", "hz", "bps", "meters", "m", "gb", "mb", "tb", "kb", "km", "kilometers", "ddr4", "ddr3", "ram", "\"", "'"};
+static const string punctuations = ",;:]}[{|}]()`~&!@#$%^*";
 vector<Token> all_tokens;
 
 class Token {
@@ -74,29 +75,31 @@ class Product {
 			string temp;
 			while (getline(check1, temp, ' ')) {
 				remove_if(temp.begin(), temp.end(), ::isspace);
+				for(char character : punctuations) {
+					temp.erase(remove(temp.begin(), temp.end(), character), temp.end());
+				}
+
 				transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
 				tokenized_title.push_back(temp);
 			}
 		}
 
-		void token_concatenizer() {
-			int counter = 0;
-			for(string token : tokenized_title) {
+		void token_concatenator() {
+			for(int i = 0; i < tokenized_title.size(); i++) {
 				for(string attribute : attributes) {
-					if(token == attribute) {
-						tokenized_title[counter - 1].append(attribute);
-						tokenized_title.erase(tokenized_title.begin() + counter);
+					if(tokenized_title[i] == attribute) {
+						tokenized_title[i - 1].append(attribute);
+						tokenized_title.erase(tokenized_title.begin() + i);
 					}
 				}
-				counter++;
 			}
 		}
 };
 
 int main() {
-	Product amazon("Amazon", "Asus Viviobook 2 gb");
+	Product amazon("Amazon", "ASUS VivoBook F510UA 15.6 Full HD Nanoedge Laptop, Intel Core i5-8250U Processor, 8 GB DDR4 RAM, 1 TB HDD, USB-C, Fingerprint, Windows 10 Home - F510UA-AH51, Star Gray");
 	amazon.generate_tokens();
-	amazon.token_concatenizer();
+	amazon.token_concatenator();
 	for(string x:amazon.tokenized_title) {
 		cout << x << endl;
 	}
