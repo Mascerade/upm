@@ -14,7 +14,7 @@ using namespace std;
 
 class Token;
 
-static const string attributes[] = {"bytes", "hz", "bps", "meters", "m", "gb", "mb", "tb", "kb", "km", "kilometers", "\"", "'"};
+static const string attributes[] = {"bytes", "hz", "bps", "meters","gb", "mb", "tb", "kb", "km", "kilometers", "\"", "'"};
 static const string punctuations = ",;:]}[{|}]()`~&!@#$%^*";
 vector<Token> all_tokens;
 
@@ -24,7 +24,7 @@ class Token {
 		int id;
 		int frequency;
 		string value;
-		int semantic;
+		char semantic;
 	
 	Token(string value) {
 		this->value = value;
@@ -33,19 +33,55 @@ class Token {
 
 	/* 
 	Type Semantics Identification Rule/s - As defined by UPM[4]
-	Attribute: (1) Numeric tokens followed by measurement units, or (2) mixed tokens ending in a measurement unit
+	* The numbers in parenthesis represent 
+	Attribute: (1) Numeric tokens followed by measurement units, or mixed tokens ending in a measurement unit
 	
-	Model: The first mixed token in the title which does not represent an attribute
+	Model: (2) The first mixed token in the title which does not represent an attribute
 	
-	Model: All the rest mixed tokens in the title which do not represent an attribute
+	Model: (3) All the rest mixed tokens in the title which do not represent an attribute
 	
-	Model: A numeric token which is not followed by a measurement unit
+	Model: (4) A numeric token which is not followed by a measurement unit
 	
-	Normal: All the other tokens of the title
+	Normal: (5) All the other tokens of the title
 	*/
 
 	void define_semantic() {
 		
+		// If all of the characters are number, then it most likely represents an item model (UPM[4])
+		if (all_of(value.begin(), value.end(), ::isdigit)) {
+			semantic = 'I';
+			return;
+		}
+
+		// If the string has the attribute in it and the character
+		// before the attribute is a digit, consider it an attribute (UPM[4])
+		for (string attribute : attributes){
+			int found = value.find(attribute);
+			if (found != value.npos) {
+				if (isdigit(value[found - 1])){
+					semantic = 'A';
+					return;
+				}
+			}
+		}
+
+		// If its not an attribute, but it has a combination
+		// of both numbers and characters, consider it an item model (UPM[4])
+		for (char character : value) {
+			int digits = 0;
+			if (isdigit(character)) {
+				digits += 1;
+			}
+
+			if (digits > 0) {
+				semantic = 'I';
+				return;
+			}
+
+		}
+
+		// If it is neither an attribute nor an item model, consider it a normal token (UPM[4])
+		semantic = 'N';
 	}
 
 
@@ -145,5 +181,8 @@ class Product {
 int main() {
 	Product amazon("Amazon", "Asus ASUS VivoBook F510UA 15.6 Full HD Nanoedge Laptop, Intel Core i5-8250U Processor, 8 GB DDR4 RAM, 1 TB HDD, USB-C, Fingerprint, Windows 10 Home - F510UA-AH51, Star Gray");
 	amazon.execute();
+	Token x("ItemModel1");
+	x.define_semantic();
+	cout << x.semantic <<endl;
 	return 1;
 }
