@@ -177,14 +177,15 @@ class Product {
 			generate_tokens();
 			token_concatenator();
 			generate_token_objects();
-			for (Token* ptr : Tokens) { 
-				cout << ptr << endl;
+			for (Token* token : Tokens) {
+				cout << token->value << endl;
 			}
 		}
 };
 
 Token* add_token(string token_value) {
 	Token token(token_value);
+	
 	for (int i = 0; i < token_hashes.size(); i++) {
 		if (token_hashes[i] == token.id) {
 			all_tokens[i].frequency++;
@@ -193,12 +194,15 @@ Token* add_token(string token_value) {
 	}
 
 	token.frequency++;
+	Token* ptr = all_tokens.data();
 	all_tokens.push_back(token);
+	ptr++;
 	return &all_tokens[all_tokens.size() - 1];
 }
 
 int main() {
-	Product amazon("Amazon", "Asus ASUS VivoBook F510UA 15.6 Full HD Nanoedge Laptop, Intel Core i5-8250U Processor, 8 GB DDR4 RAM, 1 TB HDD, USB-C, Fingerprint, Windows 10 Home - F510UA-AH51, Star Gray");
+	all_tokens.reserve(500);
+	Product amazon("Amazon", "ASUS VivoBook F510UA 15.6 Full HD Nanoedge Laptop, Intel Core i5-8250U Processor, 8 GB DDR4 RAM, 1 TB HDD, USB-C, Fingerprint, Windows 10 Home - F510UA-AH51, Star Gray");
 	amazon.execute();
 	return 1;
 }
