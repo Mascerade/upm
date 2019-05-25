@@ -178,7 +178,7 @@ class Product {
 			token_concatenator();
 			generate_token_objects();
 			for (Token* token : Tokens) {
-				cout << token->value << endl;
+				cout << token->value << ", " << token->frequency << endl;
 			}
 		}
 };
@@ -194,6 +194,7 @@ Token* add_token(string token_value) {
 	}
 
 	token.frequency++;
+	token_hashes.push_back(token.id);
 	Token* ptr = all_tokens.data();
 	all_tokens.push_back(token);
 	ptr++;
@@ -203,6 +204,8 @@ Token* add_token(string token_value) {
 int main() {
 	all_tokens.reserve(500);
 	Product amazon("Amazon", "ASUS VivoBook F510UA 15.6 Full HD Nanoedge Laptop, Intel Core i5-8250U Processor, 8 GB DDR4 RAM, 1 TB HDD, USB-C, Fingerprint, Windows 10 Home - F510UA-AH51, Star Gray");
+	Product newegg("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
 	amazon.execute();
+	newegg.execute();
 	return 1;
 }
