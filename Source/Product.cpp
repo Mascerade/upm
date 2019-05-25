@@ -13,12 +13,12 @@ Created by: Jason Acheampong
 using namespace std;
 
 class Token;
-
+Token* add_token(string);
 static const string attributes[] = {"bytes", "hz", "bps", "meters","gb", "mb", "tb", "kb", "km", "kilometers", "\"", "'"};
 static const string punctuations = ",;:]}[{|}]()`~&!@#$%^*";
 
 vector<int> token_hashes;
-vector<Token*> all_tokens;
+vector<Token> all_tokens;
 
 class Token {
 	hash<string> str_hash;
@@ -86,14 +86,6 @@ class Token {
 		// If it is neither an attribute nor an item model, consider it a normal token (UPM[4])
 		semantic = 'N';
 	}
-
-	bool add() {
-		if (token_hashes.size() == 0) {
-			token_hashes.push_back(id);
-			all_tokens.push_back(this);
-		}
-		return true;
-	}
 };
 
 class Product {
@@ -108,7 +100,7 @@ class Product {
 		vector<string> tokenized_title;
 		
 		// Object Token pointers
-		vector<Token> Tokens;
+		vector<Token*> Tokens;
 
 		Product(string vendor, string title) {
 			// Set the attributes of of the product
@@ -173,23 +165,40 @@ class Product {
 		}
 
 		void generate_token_objects() {
-			// TODO: Have to create the token objects
-				// Must make sure there are no duplicates (use the hash id)
-			
+			// For every string token in the tokenized_title, send it to add and put the return value in Tokens
+			for (string token_value : tokenized_title) {
+				Tokens.push_back(add_token(token_value));
+				// CURRENT ISSUE: The pointer does return the correct values.
+			}
 		}
 
 		void execute() {
 			// Runs the necessary functions to generate tokens and correctly format them according to UPM 
 			generate_tokens();
 			token_concatenator();
+			generate_token_objects();
+			for (Token* ptr : Tokens) { 
+				cout << ptr << endl;
+			}
 		}
 };
+
+Token* add_token(string token_value) {
+	Token token(token_value);
+	for (int i = 0; i < token_hashes.size(); i++) {
+		if (token_hashes[i] == token.id) {
+			all_tokens[i].frequency++;
+			return &all_tokens[i];
+		}
+	}
+
+	token.frequency++;
+	all_tokens.push_back(token);
+	return &all_tokens[all_tokens.size() - 1];
+}
 
 int main() {
 	Product amazon("Amazon", "Asus ASUS VivoBook F510UA 15.6 Full HD Nanoedge Laptop, Intel Core i5-8250U Processor, 8 GB DDR4 RAM, 1 TB HDD, USB-C, Fingerprint, Windows 10 Home - F510UA-AH51, Star Gray");
 	amazon.execute();
-	Token x("ItemModel1");
-	x.define_semantic();
-	cout << x.value <<endl;
 	return 1;
 }
