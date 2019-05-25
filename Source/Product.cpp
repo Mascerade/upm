@@ -16,7 +16,9 @@ class Token;
 
 static const string attributes[] = {"bytes", "hz", "bps", "meters","gb", "mb", "tb", "kb", "km", "kilometers", "\"", "'"};
 static const string punctuations = ",;:]}[{|}]()`~&!@#$%^*";
-vector<Token> all_tokens;
+
+vector<int> token_hashes;
+vector<Token*> all_tokens;
 
 class Token {
 	hash<string> str_hash;
@@ -29,6 +31,7 @@ class Token {
 	Token(string value) {
 		this->value = value;
 		this->id = str_hash(value);
+		frequency = 0;
 	}
 
 	/* 
@@ -84,7 +87,13 @@ class Token {
 		semantic = 'N';
 	}
 
-
+	bool add() {
+		if (token_hashes.size() == 0) {
+			token_hashes.push_back(id);
+			all_tokens.push_back(this);
+		}
+		return true;
+	}
 };
 
 class Product {
@@ -166,15 +175,13 @@ class Product {
 		void generate_token_objects() {
 			// TODO: Have to create the token objects
 				// Must make sure there are no duplicates (use the hash id)
+			
 		}
 
 		void execute() {
 			// Runs the necessary functions to generate tokens and correctly format them according to UPM 
 			generate_tokens();
 			token_concatenator();
-			for (string x : tokenized_title) {
-				cout << x << endl;
-			}
 		}
 };
 
@@ -183,6 +190,6 @@ int main() {
 	amazon.execute();
 	Token x("ItemModel1");
 	x.define_semantic();
-	cout << x.semantic <<endl;
+	cout << x.value <<endl;
 	return 1;
 }
