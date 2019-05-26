@@ -13,12 +13,25 @@ Created by: Jason Acheampong
 using namespace std;
 
 class Token;
+class Combination;
 Token* add_token(string);
 static const string attributes[] = {"bytes", "hz", "bps", "meters","gb", "mb", "tb", "kb", "km", "kilometers", "\"", "'"};
 static const string punctuations = ",;:]}[{|}]()`~&!@#$%^*";
 
 vector<int> token_hashes;
 vector<Token> all_tokens;
+
+class Combination {
+	public:
+		int id;
+		int frequency;
+		vector<Token*> tokens;
+		int dacc;
+
+		Combination(vector<Token*> vec) {
+			tokens = vec;
+		}
+};
 
 class Token {
 	hash<string> str_hash;
