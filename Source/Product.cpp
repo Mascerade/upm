@@ -177,13 +177,11 @@ class Product {
 			generate_tokens();
 			token_concatenator();
 			generate_token_objects();
-			for (Token* token : Tokens) {
-				cout << token->value << ", " << token->frequency << endl;
-			}
 		}
 };
 
 Token* add_token(string token_value) {
+	// TODO: Use Hash Map instead of vector to store tokens
 	Token token(token_value);
 	
 	for (int i = 0; i < token_hashes.size(); i++) {
