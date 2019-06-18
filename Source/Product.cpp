@@ -199,6 +199,37 @@ class Product {
 		// k is the amount of elements in each token
 		// Remember n choose k (nCk)
 		void generate_combinations(int k) {
+			// n is the total number of Tokens pointers in the Token* vector
+			int n = Tokens.size();
+
+			// Base is the vector that contains the first k elements of the given array
+			vector<int> base;
+
+			// Populate base with the first k elements
+			for (int base_i = 0; base_i < k; base_i++) {
+				base.push_back(base_i);
+			}
+
+			// We need to iterate through base backwards
+			// This is because the algorithm works by starting at i = k where i is the index in base
+			int i = k - 1; 
+			while (i > n - k + i) {
+				if (i == k - 1) {
+					base[k - 1] = i;
+					continue;
+				}
+
+				// When i is less than k - 1, meaning adjust the values ahead of i 
+				if (i < k - 1) {
+					vector<int> temp_base;
+					temp_base = base;
+					for (int x = i; i < k; i++) { 
+						temp_base[x] = base[x] + 1;
+					}
+				}
+
+				i--;
+			}
 		}
 };
 
