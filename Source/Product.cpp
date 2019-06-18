@@ -195,7 +195,10 @@ class Product {
 			vector<Token*> data;
 		}
 
-		void generate_combinations(int m) {
+		// n is the amount of total elements to make the combinations
+		// k is the amount of elements in each token
+		// Remember n choose k (nCk)
+		void generate_combinations(int k) {
 		}
 };
 
@@ -225,6 +228,5 @@ int main() {
 	Product newegg("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
 	amazon.execute();
 	newegg.execute();
-
 	return 1;
 }
