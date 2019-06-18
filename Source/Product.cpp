@@ -115,6 +115,9 @@ class Product {
 		// Object Token pointers
 		vector<Token*> Tokens;
 
+		// Combinations
+		vector<vector<Token*>> Combinations;
+
 		Product(string vendor, string title) {
 			// Set the attributes of of the product
 			this->vendor = vendor;
@@ -181,7 +184,6 @@ class Product {
 			// For every string token in the tokenized_title, send it to add and put the return value in Tokens
 			for (string token_value : tokenized_title) {
 				Tokens.push_back(add_token(token_value));
-				// CURRENT ISSUE: The pointer does return the correct values.
 			}
 		}
 
@@ -190,6 +192,10 @@ class Product {
 			generate_tokens();
 			token_concatenator();
 			generate_token_objects();
+			vector<Token*> data;
+		}
+
+		void generate_combinations(int m) {
 		}
 };
 
@@ -213,10 +219,12 @@ Token* add_token(string token_value) {
 }
 
 int main() {
+	// Reserving 500 "spots" of memory so that it doesn't change the position of the values for 500 values
 	all_tokens.reserve(500);
 	Product amazon("Amazon", "ASUS VivoBook F510UA 15.6 Full HD Nanoedge Laptop, Intel Core i5-8250U Processor, 8 GB DDR4 RAM, 1 TB HDD, USB-C, Fingerprint, Windows 10 Home - F510UA-AH51, Star Gray");
 	Product newegg("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
 	amazon.execute();
 	newegg.execute();
+
 	return 1;
 }
