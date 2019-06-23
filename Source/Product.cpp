@@ -200,7 +200,7 @@ class Product {
 		// Remember n choose k (nCk)
 		void generate_combinations(int k) {
 			// n is the total number of Tokens pointers in the Token* vector
-			int n = 5;
+			int n = 8;
 
 			// Base is the vector that contains the first k elements of the given array
 			vector<int> base;
@@ -227,30 +227,63 @@ class Product {
 
 			// Must iterate through every position in the vector
 			while (i >= 0) {
-				int iterations = 0;
- 
+				for (int x = 0; x < k; x++) {
+					if (x >= i) {
+						if (x == i) {
+							current[x] = current[x] + 1;
+						}
+
+						else { 
+							current[x] = current[x - 1] + 1;
+						}
+					}
+				}
+				for (int y = 0; y < k; y++) {
+					cout << current[y] << " ";
+				}
+				cout << endl;
+				cout << i << endl;
+				total_combinations.at(combinations_added) = current;
+				combinations_added++;
+				int check = 0;
 				// As long as the value at index i in current is less than n - k + i, continue
 				while (current[i] < n - k + i) {
 					// The element at i and everything above it should iterate by 1
 					for (int above = k - 1; above >= i; above--) {
-						if (current[above] < n - k + above) {
-							current[above] += 1;
-							if (iterations >= k - 1 - i) {
-								total_combinations.at(combinations_added) = current;
-								cout << "i: " << i << " above: " << above << " iterations: " << iterations << " current: " << current[0] << current[1] << endl;
-								combinations_added++;
+
+						if ((above != k - 1 && check == 0)) {
+							cout << "actual change" << endl;
+
+							for (int x = above + 1; x < k; x++) {
+								current[x] = current[above] + 2;
+								current[x - 1] = current[above] + 1;
+
 							}
-							iterations++;
+
+							total_combinations.at(combinations_added) = current;
+							check += 1;
+							above += 1;
+							combinations_added++;
+						}
+
+						while (current[above] < n - k + above) {
+							current[above] += 1;
+							total_combinations.at(combinations_added) = current;
+							cout << "i: " << i << " above: " << above << " current: ";
+							for (int y = 0; y < k; y++) {
+								cout << current[y] << " ";
+							}
+							cout << endl;
+							combinations_added++;
+							}
 						}
 					}
-				}
-
+				
 				// Go down a position once we are done with all those combinations
 				current = base;
 				i--;
 			}
 
-			cout << total_combinations.size() << endl;
 			for (int i = 0; i < total_combinations.size(); i++) {
 				for (int j = 0; j < k; j++) {
 					cout << total_combinations[i][j] << " ";
@@ -285,7 +318,7 @@ int main() {
 	Product amazon("Amazon", "ASUS VivoBook F510UA 15.6 Full HD Nanoedge Laptop, Intel Core i5-8250U Processor, 8 GB DDR4 RAM, 1 TB HDD, USB-C, Fingerprint, Windows 10 Home - F510UA-AH51, Star Gray");
 	Product newegg("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
 	amazon.execute();
-	amazon.generate_combinations(2);
+	amazon.generate_combinations(5);
 	newegg.execute();
 	return 1;
 }
