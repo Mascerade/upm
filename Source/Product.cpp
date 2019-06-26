@@ -206,7 +206,7 @@ class Product {
 			vector<int> base;
 
 			// All the combinations
-			vector<vector<int>> total_combinations(200, vector<int>(k));
+			vector<vector<int>> total_combinations(100, vector<int>(k));
 
 			// Base is going to be the first combination in total_combinations
 			total_combinations.push_back(base);
@@ -227,24 +227,7 @@ class Product {
 
 			// Must iterate through every position in the vector
 			while (i >= 0) {
-				// for (int x = 0; x < k; x++) {
-				// 	if (x >= i) {
-				// 		if (x == i) {
-				// 			current[x] = current[x] + 1;
-				// 		}
 
-				// 		else { 
-				// 			current[x] = current[x - 1] + 1;
-				// 		}
-				// 	}
-				// }
-				// for (int y = 0; y < k; y++) {
-				// 	cout << current[y] << " ";
-				// }
-				// cout << endl;
-				// total_combinations.at(combinations_added) = current;
-				// combinations_added++;
-				
 				// As long as the value at index i in current is less than n - k + i, continue
 				int current_index = k - 1;
 				
@@ -254,100 +237,56 @@ class Product {
 					while (current[current_index] < n - k + current_index && current_index >= i) {
 						current[current_index] += 1;
 						total_combinations.at(combinations_added) = current;
-						for (int x = 0; x < k; x++) {
-							cout << total_combinations[combinations_added][x] << " ";
-						}
-						cout << endl;
 						combinations_added++;
 					}
 
 					current_index--;
 
-					// Must reset values at this point
-					if (current[current_index] < n - k + current_index) {
-						cout << "got here " << current_index << " " << endl;
-						for (int x = current_index; x < k; x++) {
-							if (x == current_index) {
-								current[x]++;
+					// Does two loops in order to reset the values, then check the values again
+					for (int x = 0; x < 2; x++){
+						if (current[current_index] < n - k + current_index) {
+							for (int x = current_index; x < k; x++) {
+								if (x == current_index) {
+									current[x]++;
+								}
+								else {
+									current[x] = current[x - 1] + 1;
+								}
 							}
-							else {
-								current[x] = current[x - 1] + 1;
+							total_combinations.at(combinations_added) = current;
+							combinations_added++;
+						}
+
+						// Sets the current_index to the first value that is not at the max
+						for (int check = k - 1; check >= 0; check--) {
+							if (current[check] < n - k + check) {
+								current_index = check;
+								break;
 							}
-						}
-						total_combinations.at(combinations_added) = current;
-						for (int x = 0; x < k; x++) {
-							cout << total_combinations[combinations_added][x] << " ";
-						}
-						cout << endl;
-						combinations_added++;
-					}
-
-
-					for (int check = k - 1; check >= 0; check--) {
-						if (current[check] < n - k + check) {
-							current_index = check;
-							cout << "checking again " << current_index << endl; 
-							break;
-						}
-					}
-
-					if (current[current_index] < n - k + current_index) {
-						cout << "got here " << current_index << " " << endl;
-						for (int x = current_index; x < k; x++) {
-							if (x == current_index) {
-								current[x]++;
-							}
-							else {
-								current[x] = current[x - 1] + 1;
-							}
-						}
-						total_combinations.at(combinations_added) = current;
-						for (int x = 0; x < k; x++) {
-							cout << total_combinations[combinations_added][x] << " ";
-						}
-						cout << endl;
-						combinations_added++;
-					}
-
-					
-					for (int check = k - 1; check >= 0; check--) {
-						if (current[check] < n - k + check) {
-							current_index = check;
-							cout << "checking again " << current_index << endl; 
-							break;
 						}
 					}
 
 				}
 				i--;
-				// Also have to reset at this point
-				for (int x = i; x < k; x++) {
-					if (x == i) {
-						current[x]++;
-					}
+				//Also have to reset at this point
+				if (i >= 0) {
+					for (int x = i; x < k; x++) {
+						if (x == i) {
+							current[x]++;
+						}
 
-					else { 
-						current[x] = current[x - 1] + 1;
+						else { 
+							current[x] = current[x - 1] + 1;
+						}
 					}
-				}
 				
-				total_combinations.at(combinations_added) = current;
-				for (int x = 0; x < k; x++) {
-					cout << total_combinations[combinations_added][x] << " ";
-				}
-				cout << endl;
-				combinations_added++;
-			}
-			cout << "_______________________________________________________" << endl;
-			cout << combinations_added - 1 << endl;
-			total_combinations.erase(total_combinations.begin() + combinations_added - 1);
-			for (int i = 0; i < total_combinations.size(); i++) {
-				for (int j = 0; j < k; j++) {
-					cout << total_combinations[i][j] << " ";
-				}
-				cout << endl;
-			}
+					total_combinations.at(combinations_added) = current;
 
+					combinations_added++;
+				}
+			}
+			
+			cout << combinations_added << endl;
 		}
 };
 
@@ -376,7 +315,7 @@ int main() {
 	Product amazon("Amazon", "ASUS VivoBook F510UA 15.6 Full HD Nanoedge Laptop, Intel Core i5-8250U Processor, 8 GB DDR4 RAM, 1 TB HDD, USB-C, Fingerprint, Windows 10 Home - F510UA-AH51, Star Gray");
 	Product newegg("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
 	amazon.execute();
-	amazon.generate_combinations(2);
+	amazon.generate_combinations(3);
 	newegg.execute();
 	return 1;
 }
