@@ -11,9 +11,10 @@ Created by: Jason Acheampong
 #include <sstream>
 #include <functional>
 #include <unordered_map>
+#include <chrono>
 using namespace std;
 
-long factorial(int);
+long long int factorial(int);
 long n_combinations(int, int);
 
 class Token;
@@ -249,9 +250,10 @@ class Product {
 			vector<int> base;
 
 			// All the combinations
-			vector<vector<int>> total_combinations(3000000, vector<int>(k));
+			vector<vector<int>> total_combinations(999999, vector<int>(k));
 
-			// Base is going to be the first combination in total_combinations
+			// Vector of Combination objects
+			vector<Combination> total_combination_objects;
 
 			// Populate base with the first k elements
 			for (int base_i = 0; base_i < k; base_i++) {
@@ -260,12 +262,13 @@ class Product {
 
 			total_combinations.at(0) = base;
 
-
-			// i is the current index in the combination
-
 			// This is the vector that we are actually going to use to generate combinations
 			vector<int> current = base;
+			
+			// i is the current index in the combination
 			int i = k - 1;
+			
+			// This is what we use to add the combination to a specific index in the vector
 			int combinations_added = 1;
 
 			// Must iterate through every position in the vector
@@ -279,7 +282,7 @@ class Product {
 					// While the value of the current_index is less than it's defined max value
 					while (current[current_index] < n - k + current_index && current_index >= i) {
 						current[current_index] += 1;
-						total_combinations.at(combinations_added) = current;						
+						total_combinations.at(combinations_added) = current;
 						combinations_added++;
 					}
 
@@ -329,26 +332,16 @@ class Product {
 			}
 
 			cout << combinations_added << endl;
-
-			// THIS IS WAYYYYYYYYYYYYYYYYYYYYYYY TOOOOOOOOOOOO INEFFICIENTTTTTTTTTTT
-
-			// for (vector<int> temp : total_combinations) {
-			// 	vector<Token*> temp_vec;
-			// 	for (int x : temp) {
-			// 		temp_vec.push_back(Tokens[x]);
-			// 	}
-			// 	Combination temp_comb(temp_vec);
-			// 	Combinations.push_back(temp_comb);
-			// }
 		}
 };
 
-long factorial(int num) {
+long long int factorial(int num) {
 	// Takes a number and return !num
-	int number = 1;
+	long long int number = 1;
 	for (int x = num; x > 0; x--) {
 		number *= num;
 	}
+	return number;
 }
 
 long n_combinations(int n, int r) {
@@ -360,11 +353,15 @@ long n_combinations(int n, int r) {
 
 int main() {
 	// Reserving 500 "spots" of memory so that it doesn't change the position of the values for 500 values
+	auto start = chrono::high_resolution_clock::now();
 	all_tokens.reserve(500);
 	Product amazon("Amazon", "ASUS VivoBook F510UA 15.6 Full HD Nanoedge Laptop, Intel Core i5-8250U Processor, 8 GB DDR4 RAM, 1 TB HDD, USB-C, Fingerprint, Windows 10 Home - F510UA-AH51, Star Gray");
 	Product newegg("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
 	amazon.execute();
 	amazon.generate_combinations(6);
 	newegg.execute();
+	auto stop = chrono::high_resolution_clock::now();
+	auto duration = chrono::duration_cast<chrono::milliseconds>(stop - start);
+	cout << duration.count() << endl;
 	return 1;
 }
