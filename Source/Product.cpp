@@ -10,6 +10,7 @@ Created by: Jason Acheampong
 #include <string>
 #include <sstream>
 #include <functional>
+#include <unordered_map>
 using namespace std;
 
 long factorial(int);
@@ -24,6 +25,7 @@ static const string punctuations = ",;:]}[{|}]()`~&!@#$%^*";
 vector<int> token_hashes;
 vector<Token> all_tokens;
 vector<Combination> all_combinations;
+
 
 class Combination {
 	// Stores the attributes that a combination has according to UPM[4 - 5]
@@ -52,6 +54,7 @@ class Token {
 		this->id = str_hash(value);
 		frequency = 0;
 	}
+
 
 	/* 
 	Type Semantics Identification Rule/s - As defined by UPM[4]
@@ -120,6 +123,9 @@ class Product {
 		
 		// Object Token pointers
 		vector<Token*> Tokens;
+
+		// Hash Map of Tokens for Easy Lookup
+		unordered_map<int, Token*> token_map;
 
 		// Combinations
 		vector<Combination> Combinations;
@@ -191,6 +197,36 @@ class Product {
 			for (string token_value : tokenized_title) {
 				Tokens.push_back(add_token(token_value));
 			}
+
+			for (auto& x : token_map) {
+				cout << x.first << ": " << x.second << endl;
+			}
+		}
+
+		Token* add_token(string token_value) {
+			// TODO: Use Hash Map instead of vector to store tokens
+			Token token(token_value);
+			// If the token is already found in the vector of Tokens, increase the freqency and return the token to be added into the Tokens vector of the product
+			for (int i = 0; i < token_hashes.size(); i++) {
+				if (token_hashes[i] == token.id) {
+					all_tokens[i].frequency++;
+					return &all_tokens[i];
+				}
+			}
+
+			token.frequency++;
+			token_hashes.push_back(token.id);
+			Token* ptr = all_tokens.data();
+			all_tokens.push_back(token);
+			ptr++;
+			return &all_tokens[all_tokens.size() - 1];
+		}
+
+		void generate_token_map() {
+			// Generates the Token hash map (called token_map)
+			for (int i = 0; i < Tokens.size(); i++) {
+				token_map.insert({i, Tokens[i]});
+			}
 		}
 
 		void execute() {
@@ -198,7 +234,7 @@ class Product {
 			generate_tokens();
 			token_concatenator();
 			generate_token_objects();
-			vector<Token*> data;
+			generate_token_map();
 		}
 
 		void generate_combinations(int k) {
@@ -295,7 +331,7 @@ class Product {
 			cout << combinations_added << endl;
 
 			// THIS IS WAYYYYYYYYYYYYYYYYYYYYYYY TOOOOOOOOOOOO INEFFICIENTTTTTTTTTTT
-			
+
 			// for (vector<int> temp : total_combinations) {
 			// 	vector<Token*> temp_vec;
 			// 	for (int x : temp) {
@@ -320,24 +356,7 @@ long n_combinations(int n, int r) {
 	return factorial(n) / (factorial(r) * factorial(n - r));
 }
 
-Token* add_token(string token_value) {
-	// TODO: Use Hash Map instead of vector to store tokens
-	Token token(token_value);
-	
-	for (int i = 0; i < token_hashes.size(); i++) {
-		if (token_hashes[i] == token.id) {
-			all_tokens[i].frequency++;
-			return &all_tokens[i];
-		}
-	}
 
-	token.frequency++;
-	token_hashes.push_back(token.id);
-	Token* ptr = all_tokens.data();
-	all_tokens.push_back(token);
-	ptr++;
-	return &all_tokens[all_tokens.size() - 1];
-}
 
 int main() {
 	// Reserving 500 "spots" of memory so that it doesn't change the position of the values for 500 values
@@ -345,8 +364,7 @@ int main() {
 	Product amazon("Amazon", "ASUS VivoBook F510UA 15.6 Full HD Nanoedge Laptop, Intel Core i5-8250U Processor, 8 GB DDR4 RAM, 1 TB HDD, USB-C, Fingerprint, Windows 10 Home - F510UA-AH51, Star Gray");
 	Product newegg("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
 	amazon.execute();
-	amazon.generate_combinations(2);
-
+	amazon.generate_combinations(6);
 	newegg.execute();
 	return 1;
 }
