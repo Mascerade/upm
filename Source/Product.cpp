@@ -195,10 +195,11 @@ class Product {
 			vector<Token*> data;
 		}
 
-		// n is the amount of total elements to make the combinations
-		// k is the amount of elements in each token; Ex: if k = 3 there would be three elements in each combination
-		// Remember n choose k (nCk)
 		void generate_combinations(int k) {
+			// n is the amount of total elements to make the combinations
+			// k is the amount of elements in each token; Ex: if k = 3 there would be three elements in each combination
+			// Remember n choose k (nCk)
+
 			// n is the total number of Tokens pointers in the Token* vector
 			int n = 8;
 
@@ -209,7 +210,6 @@ class Product {
 			vector<vector<int>> total_combinations(100, vector<int>(k));
 
 			// Base is going to be the first combination in total_combinations
-			total_combinations.push_back(base);
 
 			// Populate base with the first k elements
 			for (int base_i = 0; base_i < k; base_i++) {
@@ -217,6 +217,7 @@ class Product {
 			}
 
 			total_combinations.at(0) = base;
+
 
 			// i is the current index in the combination
 
@@ -265,8 +266,8 @@ class Product {
 							}
 						}
 					}
-
 				}
+
 				i--;
 				//Also have to reset at this point
 				if (i >= 0) {
@@ -281,11 +282,10 @@ class Product {
 					}
 				
 					total_combinations.at(combinations_added) = current;
-
 					combinations_added++;
 				}
 			}
-			
+
 			cout << combinations_added << endl;
 		}
 };
