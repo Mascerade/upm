@@ -12,6 +12,9 @@ Created by: Jason Acheampong
 #include <functional>
 using namespace std;
 
+long factorial(int);
+long n_combinations(int, int);
+
 class Token;
 class Combination;
 Token* add_token(string);
@@ -30,6 +33,7 @@ class Combination {
 
 		Combination(vector<Token*> vec) {
 			tokens = vec;
+			frequency = 1;
 		}
 };
 
@@ -289,6 +293,17 @@ class Product {
 			cout << combinations_added << endl;
 		}
 };
+
+long factorial(int num) {
+	int number = 1;
+	for (int x = num; x > 0; x--) {
+		number *= num;
+	}
+}
+
+long n_combinations(int n, int r) {
+	return factorial(n) / (factorial(r) * factorial(n - r));
+}
 
 Token* add_token(string token_value) {
 	// TODO: Use Hash Map instead of vector to store tokens
