@@ -23,13 +23,15 @@ static const string punctuations = ",;:]}[{|}]()`~&!@#$%^*";
 
 vector<int> token_hashes;
 vector<Token> all_tokens;
+vector<Combination> all_combinations;
 
 class Combination {
+	// Stores the attributes that a combination has according to UPM[4 - 5]
 	public:
-		int id;
-		int frequency;
-		vector<Token*> tokens;
-		int dacc;
+		int id; // The hash of the combination
+		int frequency; // The amount of times the combination occurs throughout all the product titles
+		vector<Token*> tokens; // The vecotr of Tokens that the combination contains
+		int dacc; 
 
 		Combination(vector<Token*> vec) {
 			tokens = vec;
@@ -120,7 +122,7 @@ class Product {
 		vector<Token*> Tokens;
 
 		// Combinations
-		vector<vector<Token*>> Combinations;
+		vector<Combination> Combinations;
 
 		Product(string vendor, string title) {
 			// Set the attributes of of the product
@@ -205,13 +207,13 @@ class Product {
 			// Remember n choose k (nCk)
 
 			// n is the total number of Tokens pointers in the Token* vector
-			int n = 8;
+			int n = Tokens.size();
 
 			// Base is the vector that contains the first k elements of the given array
 			vector<int> base;
 
 			// All the combinations
-			vector<vector<int>> total_combinations(100, vector<int>(k));
+			vector<vector<int>> total_combinations(3000000, vector<int>(k));
 
 			// Base is going to be the first combination in total_combinations
 
@@ -241,7 +243,7 @@ class Product {
 					// While the value of the current_index is less than it's defined max value
 					while (current[current_index] < n - k + current_index && current_index >= i) {
 						current[current_index] += 1;
-						total_combinations.at(combinations_added) = current;
+						total_combinations.at(combinations_added) = current;						
 						combinations_added++;
 					}
 
@@ -291,10 +293,22 @@ class Product {
 			}
 
 			cout << combinations_added << endl;
+
+			// THIS IS WAYYYYYYYYYYYYYYYYYYYYYYY TOOOOOOOOOOOO INEFFICIENTTTTTTTTTTT
+			
+			// for (vector<int> temp : total_combinations) {
+			// 	vector<Token*> temp_vec;
+			// 	for (int x : temp) {
+			// 		temp_vec.push_back(Tokens[x]);
+			// 	}
+			// 	Combination temp_comb(temp_vec);
+			// 	Combinations.push_back(temp_comb);
+			// }
 		}
 };
 
 long factorial(int num) {
+	// Takes a number and return !num
 	int number = 1;
 	for (int x = num; x > 0; x--) {
 		number *= num;
@@ -302,6 +316,7 @@ long factorial(int num) {
 }
 
 long n_combinations(int n, int r) {
+	// Returns nCr
 	return factorial(n) / (factorial(r) * factorial(n - r));
 }
 
@@ -330,7 +345,8 @@ int main() {
 	Product amazon("Amazon", "ASUS VivoBook F510UA 15.6 Full HD Nanoedge Laptop, Intel Core i5-8250U Processor, 8 GB DDR4 RAM, 1 TB HDD, USB-C, Fingerprint, Windows 10 Home - F510UA-AH51, Star Gray");
 	Product newegg("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
 	amazon.execute();
-	amazon.generate_combinations(3);
+	amazon.generate_combinations(2);
+
 	newegg.execute();
 	return 1;
 }
