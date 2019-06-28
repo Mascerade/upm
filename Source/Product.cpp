@@ -15,7 +15,7 @@ Created by: Jason Acheampong
 using namespace std;
 
 long long int factorial(int);
-long n_combinations(int, int);
+long long int n_combinations(int, int);
 
 class Token;
 class Combination;
@@ -230,108 +230,130 @@ class Product {
 			}
 		}
 
+
+
+		void generate_combinations(int k) {
+			// Generates up to x choose 7 combinations
+			int num_tokens = Tokens.size();
+			if (k >= 3) {
+				vector<Token*> toks(3);
+				for (int i = 0; i < num_tokens; i++) {
+					for (int j = i + 1; j < num_tokens; j++) {
+						for (int l = j + 1; l < num_tokens; l++) {
+							toks[0] = Tokens[i];
+							toks[1] = Tokens[j];
+							toks[2] = Tokens[l];
+
+							Combination comb(toks);
+							Combinations.push_back(comb);
+						}
+					}
+				}
+			}
+
+			if (k >= 4) {
+				vector<Token*> toks(4);
+				for (int i = 0; i < num_tokens; i++) {
+					for (int j = i + 1; j < num_tokens; j++) {
+						for (int l = j + 1; l < num_tokens; l++) {
+							for (int m = l + 1; m < num_tokens; m++) {
+								toks[0] = Tokens[i];
+								toks[1] = Tokens[j];
+								toks[2] = Tokens[l];
+								toks[3] = Tokens[m];
+
+								Combination comb(toks);
+								Combinations.push_back(comb);
+							}
+						}
+					}
+				}
+			}
+
+			if (k >= 5) {
+				vector<Token*> toks(5);
+				for (int i = 0; i < num_tokens; i++) {
+					for (int j = i + 1; j < num_tokens; j++) {
+						for (int l = j + 1; l < num_tokens; l++) {
+							for (int m = l + 1; m < num_tokens; m++) {
+								for (int n = m + 1; n < num_tokens; n++) {
+									toks[0] = Tokens[i];
+									toks[1] = Tokens[j];
+									toks[2] = Tokens[l];
+									toks[3] = Tokens[m];
+									toks[4] = Tokens[n];
+
+									Combination comb(toks);
+									Combinations.push_back(comb);
+								}
+							}
+						}
+					}
+				}
+			}
+
+			if (k >= 6) {
+				vector<Token*> toks(6);
+				for (int i = 0; i < num_tokens; i++) {
+					for (int j = i + 1; j < num_tokens; j++) {
+						for (int l = j + 1; l < num_tokens; l++) {
+							for (int m = l + 1; m < num_tokens; m++) {
+								for (int n = m + 1; n < num_tokens; n++) {
+									for (int o = n + 1; o < num_tokens; o++) {
+										toks[0] = Tokens[i];
+										toks[1] = Tokens[j];
+										toks[2] = Tokens[l];
+										toks[3] = Tokens[m];
+										toks[4] = Tokens[n];
+										toks[5] = Tokens[o];
+
+										Combination comb(toks);
+										Combinations.push_back(comb);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+			if (k >= 7) {
+				vector<Token*> toks(7);
+				for (int i = 0; i < num_tokens; i++) {
+					for (int j = i + 1; j < num_tokens; j++) {
+						for (int l = j + 1; l < num_tokens; l++) {
+							for (int m = l + 1; m < num_tokens; m++) {
+								for (int n = m + 1; n < num_tokens; n++) {
+									for (int o = n + 1; o < num_tokens; o++) {
+										for (int p = o + 1; p < num_tokens; p++) {
+											vector<Token*> toks;
+											toks[0] = Tokens[i];
+											toks[1] = Tokens[j];
+											toks[2] = Tokens[l];
+											toks[3] = Tokens[m];
+											toks[4] = Tokens[n];
+											toks[5] = Tokens[o];
+											toks[6] = Tokens[p];
+
+											Combination comb(toks);
+											Combinations.push_back(comb);
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
 		void execute() {
 			// Runs the necessary functions to generate tokens and correctly format them according to UPM 
 			generate_tokens();
 			token_concatenator();
 			generate_token_objects();
 			generate_token_map();
-		}
-
-		void generate_combinations(int k) {
-			// n is the amount of total elements to make the combinations
-			// k is the amount of elements in each token; Ex: if k = 3 there would be three elements in each combination
-			// Remember n choose k (nCk)
-
-			// n is the total number of Tokens pointers in the Token* vector
-			int n = Tokens.size();
-
-			// Base is the vector that contains the first k elements of the given array
-			vector<int> base;
-
-			// All the combinations
-			vector<vector<int>> total_combinations(999999, vector<int>(k));
-
-			// Vector of Combination objects
-			vector<Combination> total_combination_objects;
-
-			// Populate base with the first k elements
-			for (int base_i = 0; base_i < k; base_i++) {
-				base.push_back(base_i);
-			}
-
-			total_combinations.at(0) = base;
-
-			// This is the vector that we are actually going to use to generate combinations
-			vector<int> current = base;
-			
-			// i is the current index in the combination
-			int i = k - 1;
-			
-			// This is what we use to add the combination to a specific index in the vector
-			int combinations_added = 1;
-
-			// Must iterate through every position in the vector
-			while (i >= 0) {
-
-				// As long as the value at index i in current is less than n - k + i, continue
-				int current_index = k - 1;
-				
-				while (current[i] < n - k + i) {
-
-					// While the value of the current_index is less than it's defined max value
-					while (current[current_index] < n - k + current_index && current_index >= i) {
-						current[current_index] += 1;
-						total_combinations.at(combinations_added) = current;
-						combinations_added++;
-					}
-
-					current_index--;
-
-					// Does two loops in order to reset the values, then check the values again
-					for (int x = 0; x < 2; x++){
-						if (current[current_index] < n - k + current_index) {
-							for (int x = current_index; x < k; x++) {
-								if (x == current_index) {
-									current[x]++;
-								}
-								else {
-									current[x] = current[x - 1] + 1;
-								}
-							}
-							total_combinations.at(combinations_added) = current;
-							combinations_added++;
-						}
-
-						// Sets the current_index to the first value that is not at the max
-						for (int check = k - 1; check >= 0; check--) {
-							if (current[check] < n - k + check) {
-								current_index = check;
-								break;
-							}
-						}
-					}
-				}
-
-				i--;
-				//Also have to reset at this point
-				if (i >= 0) {
-					for (int x = i; x < k; x++) {
-						if (x == i) {
-							current[x]++;
-						}
-
-						else { 
-							current[x] = current[x - 1] + 1;
-						}
-					}
-				
-					total_combinations.at(combinations_added) = current;
-					combinations_added++;
-				}
-			}
-
-			cout << combinations_added << endl;
+			generate_combinations(6);
 		}
 };
 
@@ -344,7 +366,7 @@ long long int factorial(int num) {
 	return number;
 }
 
-long n_combinations(int n, int r) {
+long long int n_combinations(int n, int r) {
 	// Returns nCr
 	return factorial(n) / (factorial(r) * factorial(n - r));
 }
@@ -358,7 +380,6 @@ int main() {
 	Product amazon("Amazon", "ASUS VivoBook F510UA 15.6 Full HD Nanoedge Laptop, Intel Core i5-8250U Processor, 8 GB DDR4 RAM, 1 TB HDD, USB-C, Fingerprint, Windows 10 Home - F510UA-AH51, Star Gray");
 	Product newegg("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
 	amazon.execute();
-	amazon.generate_combinations(6);
 	newegg.execute();
 	auto stop = chrono::high_resolution_clock::now();
 	auto duration = chrono::duration_cast<chrono::milliseconds>(stop - start);
