@@ -53,6 +53,7 @@ class Token {
 	Token(string value) {
 		this->value = value;
 		this->id = str_hash(value);
+		this->define_semantic();
 		frequency = 0;
 	}
 
@@ -109,6 +110,10 @@ class Token {
 		// If it is neither an attribute nor an item model, consider it a normal token (UPM[4])
 		semantic = 'N';
 	}
+
+	int get_id() {
+		return this->id;
+	}
 };
 
 class Product {
@@ -143,9 +148,10 @@ class Product {
 			// Check1 is used to parse the string by space 
 			stringstream check1(this->title);
 			string temp;
-
+			int added = 0;
 			// Goes through each token and gets rid of the punctuation from the token
-			while (getline(check1, temp, ' ')) {
+			while (getline(check1, temp, ' ') && added < 100) {
+				added++;
 				remove_if(temp.begin(), temp.end(), ::isspace);
 				for(char character : punctuations) {
 					temp.erase(remove(temp.begin(), temp.end(), character), temp.end());
@@ -199,8 +205,13 @@ class Product {
 				Tokens.push_back(add_token(token_value));
 			}
 
-			for (auto& x : token_map) {
-				cout << x.first << ": " << x.second << endl;
+			while (Tokens.size() > 20) {
+				for (int i = Tokens.size() - 1; i >= 0; i--) {
+					if (Tokens[i]->semantic == 'N') {
+						Tokens.erase(Tokens.begin() + i);
+						break;
+					}
+				}
 			}
 		}
 
@@ -230,20 +241,31 @@ class Product {
 			}
 		}
 
-
-
 		void generate_combinations(int k) {
 			// Generates up to x choose 7 combinations
+			hash<string> str_hash;
+			int comb_id;
 			int num_tokens = Tokens.size();
 			if (k >= 3) {
 				vector<Token*> toks(3);
+				string sorted_sig = "";
+				sorted_sig.reserve(5);
 				for (int i = 0; i < num_tokens; i++) {
 					for (int j = i + 1; j < num_tokens; j++) {
 						for (int l = j + 1; l < num_tokens; l++) {
 							toks[0] = Tokens[i];
 							toks[1] = Tokens[j];
 							toks[2] = Tokens[l];
+							sort(toks.begin(), toks.end());
 
+							sorted_sig = "";
+							sorted_sig += toks[0]->get_id();
+							sorted_sig += " ";
+							sorted_sig += toks[1]->get_id();
+							sorted_sig += " ";
+							sorted_sig += toks[2]->get_id();
+
+							comb_id = str_hash(sorted_sig);
 							Combination comb(toks);
 							Combinations.push_back(comb);
 						}
@@ -253,6 +275,9 @@ class Product {
 
 			if (k >= 4) {
 				vector<Token*> toks(4);
+				string sorted_sig = "";
+				sorted_sig.reserve(7);
+
 				for (int i = 0; i < num_tokens; i++) {
 					for (int j = i + 1; j < num_tokens; j++) {
 						for (int l = j + 1; l < num_tokens; l++) {
@@ -261,7 +286,18 @@ class Product {
 								toks[1] = Tokens[j];
 								toks[2] = Tokens[l];
 								toks[3] = Tokens[m];
+								sort(toks.begin(), toks.end());
 
+								sorted_sig = "";
+								sorted_sig += toks[0]->get_id();
+								sorted_sig += " ";
+								sorted_sig += toks[1]->get_id();
+								sorted_sig += " ";
+								sorted_sig += toks[2]->get_id();
+								sorted_sig += " ";
+								sorted_sig += toks[3]->get_id();
+
+								comb_id = str_hash(sorted_sig);
 								Combination comb(toks);
 								Combinations.push_back(comb);
 							}
@@ -272,6 +308,8 @@ class Product {
 
 			if (k >= 5) {
 				vector<Token*> toks(5);
+				string sorted_sig = "";
+				sorted_sig.reserve(9);
 				for (int i = 0; i < num_tokens; i++) {
 					for (int j = i + 1; j < num_tokens; j++) {
 						for (int l = j + 1; l < num_tokens; l++) {
@@ -283,6 +321,20 @@ class Product {
 									toks[3] = Tokens[m];
 									toks[4] = Tokens[n];
 
+									sort(toks.begin(), toks.end());
+									
+									sorted_sig = "";
+									sorted_sig += toks[0]->get_id();
+									sorted_sig += " ";
+									sorted_sig += toks[1]->get_id();
+									sorted_sig += " ";
+									sorted_sig += toks[2]->get_id();
+									sorted_sig += " ";
+									sorted_sig += toks[3]->get_id();
+									sorted_sig += " ";
+									sorted_sig += toks[4]->get_id();
+
+									comb_id = str_hash(sorted_sig);
 									Combination comb(toks);
 									Combinations.push_back(comb);
 								}
@@ -294,6 +346,8 @@ class Product {
 
 			if (k >= 6) {
 				vector<Token*> toks(6);
+				string sorted_sig = "";
+				sorted_sig.reserve(11);
 				for (int i = 0; i < num_tokens; i++) {
 					for (int j = i + 1; j < num_tokens; j++) {
 						for (int l = j + 1; l < num_tokens; l++) {
@@ -307,6 +361,22 @@ class Product {
 										toks[4] = Tokens[n];
 										toks[5] = Tokens[o];
 
+										sort(toks.begin(), toks.end());
+
+										sorted_sig = "";
+										sorted_sig += toks[0]->get_id();
+										sorted_sig += " ";
+										sorted_sig += toks[1]->get_id();
+										sorted_sig += " ";
+										sorted_sig += toks[2]->get_id();
+										sorted_sig += " ";
+										sorted_sig += toks[3]->get_id();
+										sorted_sig += " ";
+										sorted_sig += toks[4]->get_id();
+										sorted_sig += " ";
+										sorted_sig += toks[5]->get_id();
+
+										comb_id = str_hash(sorted_sig);
 										Combination comb(toks);
 										Combinations.push_back(comb);
 									}
@@ -319,6 +389,8 @@ class Product {
 
 			if (k >= 7) {
 				vector<Token*> toks(7);
+				string sorted_sig = "";
+				sorted_sig.reserve(13);
 				for (int i = 0; i < num_tokens; i++) {
 					for (int j = i + 1; j < num_tokens; j++) {
 						for (int l = j + 1; l < num_tokens; l++) {
@@ -335,6 +407,24 @@ class Product {
 											toks[5] = Tokens[o];
 											toks[6] = Tokens[p];
 
+											sort(toks.begin(), toks.end());
+
+											sorted_sig = "";
+											sorted_sig += toks[0]->get_id();
+											sorted_sig += " ";
+											sorted_sig += toks[1]->get_id();
+											sorted_sig += " ";
+											sorted_sig += toks[2]->get_id();
+											sorted_sig += " ";
+											sorted_sig += toks[3]->get_id();
+											sorted_sig += " ";
+											sorted_sig += toks[4]->get_id();
+											sorted_sig += " ";
+											sorted_sig += toks[5]->get_id();
+											sorted_sig += " ";
+											sorted_sig += toks[6]->get_id();
+
+											comb_id = str_hash(sorted_sig);
 											Combination comb(toks);
 											Combinations.push_back(comb);
 										}
@@ -379,8 +469,35 @@ int main() {
 	all_tokens.reserve(500);
 	Product amazon("Amazon", "ASUS VivoBook F510UA 15.6 Full HD Nanoedge Laptop, Intel Core i5-8250U Processor, 8 GB DDR4 RAM, 1 TB HDD, USB-C, Fingerprint, Windows 10 Home - F510UA-AH51, Star Gray");
 	Product newegg("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
+	Product newegg2("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
+	Product newegg3("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
+	Product newegg4("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
+	Product newegg5("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
+	Product newegg6("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
+	Product newegg7("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
+	Product newegg8("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
+	Product newegg9("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
+	Product newegg10("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
+	Product newegg11("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
+	Product newegg12("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
+	Product newegg13("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
+	Product newegg14("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
+
 	amazon.execute();
 	newegg.execute();
+	newegg2.execute();
+	newegg3.execute();
+	newegg4.execute();
+	newegg5.execute();
+	newegg6.execute();
+	newegg7.execute();
+	newegg8.execute();
+	newegg9.execute();
+	newegg10.execute();
+	newegg11.execute();
+	newegg12.execute();
+	newegg13.execute();
+	newegg14.execute();
 	auto stop = chrono::high_resolution_clock::now();
 	auto duration = chrono::duration_cast<chrono::milliseconds>(stop - start);
 	cout << duration.count() << endl;
