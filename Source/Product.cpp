@@ -19,13 +19,26 @@ long long int n_combinations(int, int);
 
 class Token;
 class Combination;
-Token* add_token(string);
+
+// The attributes that are used to determine if a specific token is an attribute
 static const string attributes[] = {"bytes", "hz", "bps", "meters","gb", "mb", "tb", "kb", "km", "kilometers", "\"", "'"};
+
+// Punctuation to remove
 static const string punctuations = ",;:]}[{|}]()`~&!@#$%^*";
 
+// Maximum allowed tokens for each title
+int const MAX_TOKENS = 20;
+
+// All the token hashes
 vector<int> token_hashes;
+
+// Stores EVERY SINGLE token
 vector<Token> all_tokens;
+
+// Stores EVERY SINGLE combination made
 vector<Combination> all_combinations;
+
+// Stores all the combinations with their hash as their identifier
 unordered_map<int, Combination*> combo_hash_map;
 
 
@@ -136,7 +149,7 @@ class Product {
 		unordered_map<int, Token*> token_map;
 
 		// Combinations
-		vector<Combination> Combinations;
+		vector<Combination*> Combinations;
 
 		Product(string vendor, string title) {
 			// Set the attributes of of the product
@@ -207,7 +220,7 @@ class Product {
 				Tokens.push_back(add_token(token_value));
 			}
 
-			while (Tokens.size() > 20) {
+			while (Tokens.size() > MAX_TOKENS) {
 				for (int i = Tokens.size() - 1; i >= 0; i--) {
 					if (Tokens[i]->semantic == 'N') {
 						Tokens.erase(Tokens.begin() + i);
@@ -266,7 +279,9 @@ class Product {
 
 						comb_id = str_hash(sorted_sig);
 						Combination comb(toks, comb_id);
-						Combinations.push_back(comb);
+						all_combinations.push_back(comb);
+						Combination* comb_ptr = &all_combinations[all_combinations.size() - 1];
+						Combinations.push_back(check_combination(comb_id, comb_ptr));
 					}
 				}
 			}
@@ -292,7 +307,9 @@ class Product {
 
 							comb_id = str_hash(sorted_sig);
 							Combination comb(toks, comb_id);
-							Combinations.push_back(comb);
+							all_combinations.push_back(comb);
+							Combination* comb_ptr = &all_combinations[all_combinations.size() - 1];
+							Combinations.push_back(check_combination(comb_id, comb_ptr));
 						}
 					}
 				}
@@ -324,7 +341,9 @@ class Product {
 
 								comb_id = str_hash(sorted_sig);
 								Combination comb(toks, comb_id);
-								Combinations.push_back(comb);
+								all_combinations.push_back(comb);
+								Combination* comb_ptr = &all_combinations[all_combinations.size() - 1];
+								Combinations.push_back(check_combination(comb_id, comb_ptr));
 							}
 						}
 					}
@@ -361,7 +380,9 @@ class Product {
 
 									comb_id = str_hash(sorted_sig);
 									Combination comb(toks, comb_id);
-									Combinations.push_back(comb);
+									all_combinations.push_back(comb);
+									Combination* comb_ptr = &all_combinations[all_combinations.size() - 1];
+									Combinations.push_back(check_combination(comb_id, comb_ptr));
 								}
 							}
 						}
@@ -403,7 +424,9 @@ class Product {
 
 										comb_id = str_hash(sorted_sig);
 										Combination comb(toks, comb_id);
-										Combinations.push_back(comb);
+										all_combinations.push_back(comb);
+										Combination* comb_ptr = &all_combinations[all_combinations.size() - 1];
+										Combinations.push_back(check_combination(comb_id, comb_ptr));
 									}
 								}
 							}
@@ -451,7 +474,9 @@ class Product {
 
 											comb_id = str_hash(sorted_sig);
 											Combination comb(toks, comb_id);
-											Combinations.push_back(comb);
+											all_combinations.push_back(comb);
+											Combination* comb_ptr = &all_combinations[all_combinations.size() - 1];
+											Combinations.push_back(check_combination(comb_id, comb_ptr));
 										}
 									}
 								}
@@ -459,6 +484,18 @@ class Product {
 						}
 					}
 				}
+			}
+		}
+
+		Combination* check_combination(int hash, Combination* combo) {
+			if (combo_hash_map.count(hash) == 0) {
+				combo_hash_map.insert({hash, combo});
+				return combo;
+			}
+			else {
+				Combination* t = combo_hash_map[hash];
+				t->frequency++;
+				return t;
 			}
 		}
 
@@ -493,6 +530,9 @@ int main() {
 	// Reserving 500 "spots" of memory so that it doesn't change the position of the values for 500 values
 	auto start = chrono::high_resolution_clock::now();
 	all_tokens.reserve(500);
+
+	// 920000 is a function of the max number of combos for each product * the number of products
+	all_combinations.reserve(920000);
 	Product amazon("Amazon", "ASUS VivoBook F510UA 15.6 Full HD Nanoedge Laptop, Intel Core i5-8250U Processor, 8 GB DDR4 RAM, 1 TB HDD, USB-C, Fingerprint, Windows 10 Home - F510UA-AH51, Star Gray");
 	Product newegg("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
 	Product newegg2("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
