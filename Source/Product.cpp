@@ -26,6 +26,7 @@ static const string punctuations = ",;:]}[{|}]()`~&!@#$%^*";
 vector<int> token_hashes;
 vector<Token> all_tokens;
 vector<Combination> all_combinations;
+unordered_map<int, Combination*> combo_hash_map;
 
 
 class Combination {
@@ -36,8 +37,9 @@ class Combination {
 		vector<Token*> tokens; // The vecotr of Tokens that the combination contains
 		int dacc; 
 
-		Combination(vector<Token*> vec) {
+		Combination(vector<Token*> vec, int hash) {
 			tokens = vec;
+			id = hash;
 			frequency = 1;
 		}
 };
@@ -246,6 +248,29 @@ class Product {
 			hash<string> str_hash;
 			int comb_id;
 			int num_tokens = Tokens.size();
+
+			if (k >= 2) {
+				vector<Token*> toks(2);
+				string sorted_sig = "";
+				sorted_sig.reserve(3);
+				for (int i = 0; i < num_tokens; i++) {
+					for (int j = i + 1; j < num_tokens; j++) {
+						toks[0] = Tokens[i];
+						toks[1] = Tokens[j];
+						sort(toks.begin(), toks.end());
+
+						sorted_sig = "";
+						sorted_sig += toks[0]->get_id();
+						sorted_sig += " ";
+						sorted_sig += toks[1]->get_id();
+
+						comb_id = str_hash(sorted_sig);
+						Combination comb(toks, comb_id);
+						Combinations.push_back(comb);
+					}
+				}
+			}
+
 			if (k >= 3) {
 				vector<Token*> toks(3);
 				string sorted_sig = "";
@@ -266,7 +291,7 @@ class Product {
 							sorted_sig += toks[2]->get_id();
 
 							comb_id = str_hash(sorted_sig);
-							Combination comb(toks);
+							Combination comb(toks, comb_id);
 							Combinations.push_back(comb);
 						}
 					}
@@ -298,7 +323,7 @@ class Product {
 								sorted_sig += toks[3]->get_id();
 
 								comb_id = str_hash(sorted_sig);
-								Combination comb(toks);
+								Combination comb(toks, comb_id);
 								Combinations.push_back(comb);
 							}
 						}
@@ -335,7 +360,7 @@ class Product {
 									sorted_sig += toks[4]->get_id();
 
 									comb_id = str_hash(sorted_sig);
-									Combination comb(toks);
+									Combination comb(toks, comb_id);
 									Combinations.push_back(comb);
 								}
 							}
@@ -377,7 +402,7 @@ class Product {
 										sorted_sig += toks[5]->get_id();
 
 										comb_id = str_hash(sorted_sig);
-										Combination comb(toks);
+										Combination comb(toks, comb_id);
 										Combinations.push_back(comb);
 									}
 								}
@@ -425,7 +450,7 @@ class Product {
 											sorted_sig += toks[6]->get_id();
 
 											comb_id = str_hash(sorted_sig);
-											Combination comb(toks);
+											Combination comb(toks, comb_id);
 											Combinations.push_back(comb);
 										}
 									}
@@ -439,6 +464,7 @@ class Product {
 
 		void execute() {
 			// Runs the necessary functions to generate tokens and correctly format them according to UPM 
+			Combinations.reserve(61000);
 			generate_tokens();
 			token_concatenator();
 			generate_token_objects();
