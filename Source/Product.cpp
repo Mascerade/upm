@@ -12,6 +12,7 @@ Created by: Jason Acheampong
 #include <functional>
 #include <unordered_map>
 #include <chrono>
+#include <math.h>
 using namespace std;
 
 long long int factorial(int);
@@ -32,7 +33,7 @@ int const MAX_TOKENS = 20;
 // All the token hashes
 vector<int> token_hashes;
 
-// Stores EVERY SINGLE token
+// Stores the token objects without duplicates
 vector<Token> all_tokens;
 
 // Stores EVERY SINGLE combination made
@@ -49,6 +50,15 @@ double lt_avg = 0.0;
 
 // Number of products
 int lprod = 0;
+
+// Value of K for combinations
+int K;
+
+// Array of the distribution of semantics 
+int semantics_distribution[] = {0, 0, 0, 0, 0};
+
+int semantic2 = 0;
+
 
 class Combination {
 	// Stores the attributes that a combination has according to UPM[4 - 5]
@@ -97,12 +107,12 @@ class Token {
 	*/
 
 	void define_semantic() {
-		
 		// If all of the characters are number, then it most likely represents an item model (UPM[4])
 		if (all_of(value.begin(), value.end(), ::isdigit)) {
 			
 			// Numeric but not attribute
 			semantic = 4;
+			semantics_distribution[3]++;
 			return;
 		}
 
@@ -115,6 +125,7 @@ class Token {
 
 					// Token represents an attribute
 					semantic = 1;
+					semantics_distribution[0]++;
 					return;
 				}
 			}
@@ -129,9 +140,18 @@ class Token {
 			}
 
 			if (digits > 0) {
-
 				// Mix of characters and numbers, but not an attribute
-				semantic = 3;
+				if (semantic2 == 0) {
+					semantic = 2;
+					semantic2++;
+					semantics_distribution[1]++;
+				}
+
+				else {
+					semantic = 3;
+					semantics_distribution[2]++;
+				}
+
 				return;
 			}
 
@@ -139,6 +159,7 @@ class Token {
 
 		// If it is neither an attribute nor an item model, consider it a normal token (UPM[4])
 		semantic = 5;
+		semantics_distribution[4]++;
 	}
 
 	int get_id() {
@@ -165,6 +186,16 @@ class Product {
 
 		// Combinations
 		vector<Combination*> Combinations;
+
+		// The highest scoring Combination's hash
+		int high_combo_hash;
+
+		// The highest scoring Combination
+		Combination* high_combo;
+
+		// Highest score
+		int high_score;
+
 
 		Product(string vendor, string title) {
 			// Set the attributes of of the product
@@ -238,10 +269,8 @@ class Product {
 
 			while (Tokens.size() > MAX_TOKENS) {
 				for (int i = Tokens.size() - 1; i >= 0; i--) {
-					if (Tokens[i]->semantic == 5) {
-						Tokens.erase(Tokens.begin() + i);
-						break;
-					}
+					Tokens.erase(Tokens.begin() + i);
+					break;
 				}
 			}
 		}
@@ -492,7 +521,7 @@ class Product {
 				}
 			}
 
-			if (k >= 7) {
+			if (k >= 100000) {
 				vector<Token*> toks(7);
 				string sorted_sig = "";
 				sorted_sig.reserve(13);
@@ -584,12 +613,14 @@ class Product {
 			lt += Tokens.size();
 			lprod += 1;
 			lt_avg = (double) lt / lprod;
+			K = lt_avg / 2;
+			semantic2 = 0;
 		}
 
 		void execute() {
 			// Does the main algorithmic processes
 			generate_token_map();
-			generate_combinations(6);
+			generate_combinations(K);
 		}
 };
 
@@ -649,6 +680,6 @@ int main() {
 	auto stop = chrono::high_resolution_clock::now();
 	auto duration = chrono::duration_cast<chrono::milliseconds>(stop - start);
 	cout << duration.count() << endl;
-	cout << lt_avg << endl;
+	cout << semantics_distribution[2] << endl;
 	return 1;
 }
