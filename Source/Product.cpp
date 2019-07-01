@@ -15,17 +15,31 @@ Created by: Jason Acheampong
 using namespace std;
 
 long long int factorial(int);
-long n_combinations(int, int);
+long long int n_combinations(int, int);
 
 class Token;
 class Combination;
-Token* add_token(string);
+
+// The attributes that are used to determine if a specific token is an attribute
 static const string attributes[] = {"bytes", "hz", "bps", "meters","gb", "mb", "tb", "kb", "km", "kilometers", "\"", "'"};
+
+// Punctuation to remove
 static const string punctuations = ",;:]}[{|}]()`~&!@#$%^*";
 
+// Maximum allowed tokens for each title
+int const MAX_TOKENS = 20;
+
+// All the token hashes
 vector<int> token_hashes;
+
+// Stores EVERY SINGLE token
 vector<Token> all_tokens;
+
+// Stores EVERY SINGLE combination made
 vector<Combination> all_combinations;
+
+// Stores all the combinations with their hash as their identifier
+unordered_map<int, Combination*> combo_hash_map;
 
 
 class Combination {
@@ -36,8 +50,9 @@ class Combination {
 		vector<Token*> tokens; // The vecotr of Tokens that the combination contains
 		int dacc; 
 
-		Combination(vector<Token*> vec) {
+		Combination(vector<Token*> vec, int hash) {
 			tokens = vec;
+			id = hash;
 			frequency = 1;
 		}
 };
@@ -53,6 +68,7 @@ class Token {
 	Token(string value) {
 		this->value = value;
 		this->id = str_hash(value);
+		this->define_semantic();
 		frequency = 0;
 	}
 
@@ -109,6 +125,10 @@ class Token {
 		// If it is neither an attribute nor an item model, consider it a normal token (UPM[4])
 		semantic = 'N';
 	}
+
+	int get_id() {
+		return this->id;
+	}
 };
 
 class Product {
@@ -129,7 +149,7 @@ class Product {
 		unordered_map<int, Token*> token_map;
 
 		// Combinations
-		vector<Combination> Combinations;
+		vector<Combination*> Combinations;
 
 		Product(string vendor, string title) {
 			// Set the attributes of of the product
@@ -143,9 +163,10 @@ class Product {
 			// Check1 is used to parse the string by space 
 			stringstream check1(this->title);
 			string temp;
-
+			int added = 0;
 			// Goes through each token and gets rid of the punctuation from the token
-			while (getline(check1, temp, ' ')) {
+			while (getline(check1, temp, ' ') && added < 100) {
+				added++;
 				remove_if(temp.begin(), temp.end(), ::isspace);
 				for(char character : punctuations) {
 					temp.erase(remove(temp.begin(), temp.end(), character), temp.end());
@@ -199,8 +220,13 @@ class Product {
 				Tokens.push_back(add_token(token_value));
 			}
 
-			for (auto& x : token_map) {
-				cout << x.first << ": " << x.second << endl;
+			while (Tokens.size() > MAX_TOKENS) {
+				for (int i = Tokens.size() - 1; i >= 0; i--) {
+					if (Tokens[i]->semantic == 'N') {
+						Tokens.erase(Tokens.begin() + i);
+						break;
+					}
+				}
 			}
 		}
 
@@ -230,108 +256,283 @@ class Product {
 			}
 		}
 
+		void generate_combinations(int k) {
+			// Generates up to x choose 7 combinations
+			hash<string> str_hash;
+			int comb_id;
+			int num_tokens = Tokens.size();
+
+			if (k >= 2) {
+				vector<Token*> toks(2);
+				string sorted_sig = "";
+				sorted_sig.reserve(3);
+				for (int i = 0; i < num_tokens; i++) {
+					for (int j = i + 1; j < num_tokens; j++) {
+						toks[0] = Tokens[i];
+						toks[1] = Tokens[j];
+						sort(toks.begin(), toks.end());
+
+						// The sorted_sig is what is used to hash the combination
+						// Essentially, it is each token's id in the sorted tokens appended to a string with spaces between 
+						sorted_sig = "";
+						sorted_sig += toks[0]->get_id();
+						sorted_sig += " ";
+						sorted_sig += toks[1]->get_id();
+
+						// The hash for each combo
+						comb_id = str_hash(sorted_sig);
+
+						// Creation of the Combination object
+						Combination comb(toks, comb_id);
+
+						// Add it to the overall vecotor of combinations
+						all_combinations.push_back(comb);
+
+						// The pointer the *points* to the combination in all_combinations
+						Combination* comb_ptr = &all_combinations[all_combinations.size() - 1];
+
+						// Add the combination pointer to the Combinations* vector of the product
+						Combinations.push_back(check_combination(comb_id, comb_ptr));
+					}
+				}
+			}
+
+			if (k >= 3) {
+				vector<Token*> toks(3);
+				string sorted_sig = "";
+				sorted_sig.reserve(5);
+				for (int i = 0; i < num_tokens; i++) {
+					for (int j = i + 1; j < num_tokens; j++) {
+						for (int l = j + 1; l < num_tokens; l++) {
+							toks[0] = Tokens[i];
+							toks[1] = Tokens[j];
+							toks[2] = Tokens[l];
+							sort(toks.begin(), toks.end());
+
+							// The sorted_sig is what is used to hash the combination
+							// Essentially, it is each token's id in the sorted tokens appended to a string with spaces between 
+							sorted_sig = "";
+							sorted_sig += toks[0]->get_id();
+							sorted_sig += " ";
+							sorted_sig += toks[1]->get_id();
+							sorted_sig += " ";
+							sorted_sig += toks[2]->get_id();
+
+							comb_id = str_hash(sorted_sig);
+							Combination comb(toks, comb_id);
+							all_combinations.push_back(comb);
+							Combination* comb_ptr = &all_combinations[all_combinations.size() - 1];
+							Combinations.push_back(check_combination(comb_id, comb_ptr));
+						}
+					}
+				}
+			}
+
+			if (k >= 4) {
+				vector<Token*> toks(4);
+				string sorted_sig = "";
+				sorted_sig.reserve(7);
+
+				for (int i = 0; i < num_tokens; i++) {
+					for (int j = i + 1; j < num_tokens; j++) {
+						for (int l = j + 1; l < num_tokens; l++) {
+							for (int m = l + 1; m < num_tokens; m++) {
+								toks[0] = Tokens[i];
+								toks[1] = Tokens[j];
+								toks[2] = Tokens[l];
+								toks[3] = Tokens[m];
+								sort(toks.begin(), toks.end());
+
+
+								// The sorted_sig is what is used to hash the combination
+								// Essentially, it is each token's id in the sorted tokens appended to a string with spaces between 
+								sorted_sig = "";
+								sorted_sig += toks[0]->get_id();
+								sorted_sig += " ";
+								sorted_sig += toks[1]->get_id();
+								sorted_sig += " ";
+								sorted_sig += toks[2]->get_id();
+								sorted_sig += " ";
+								sorted_sig += toks[3]->get_id();
+
+								comb_id = str_hash(sorted_sig);
+								Combination comb(toks, comb_id);
+								all_combinations.push_back(comb);
+								Combination* comb_ptr = &all_combinations[all_combinations.size() - 1];
+								Combinations.push_back(check_combination(comb_id, comb_ptr));
+							}
+						}
+					}
+				}
+			}
+
+			if (k >= 5) {
+				vector<Token*> toks(5);
+				string sorted_sig = "";
+				sorted_sig.reserve(9);
+				for (int i = 0; i < num_tokens; i++) {
+					for (int j = i + 1; j < num_tokens; j++) {
+						for (int l = j + 1; l < num_tokens; l++) {
+							for (int m = l + 1; m < num_tokens; m++) {
+								for (int n = m + 1; n < num_tokens; n++) {
+									toks[0] = Tokens[i];
+									toks[1] = Tokens[j];
+									toks[2] = Tokens[l];
+									toks[3] = Tokens[m];
+									toks[4] = Tokens[n];
+
+									sort(toks.begin(), toks.end());
+									
+
+									// The sorted_sig is what is used to hash the combination
+									// Essentially, it is each token's id in the sorted tokens appended to a string with spaces between 
+									sorted_sig = "";
+									sorted_sig += toks[0]->get_id();
+									sorted_sig += " ";
+									sorted_sig += toks[1]->get_id();
+									sorted_sig += " ";
+									sorted_sig += toks[2]->get_id();
+									sorted_sig += " ";
+									sorted_sig += toks[3]->get_id();
+									sorted_sig += " ";
+									sorted_sig += toks[4]->get_id();
+
+									comb_id = str_hash(sorted_sig);
+									Combination comb(toks, comb_id);
+									all_combinations.push_back(comb);
+									Combination* comb_ptr = &all_combinations[all_combinations.size() - 1];
+									Combinations.push_back(check_combination(comb_id, comb_ptr));
+								}
+							}
+						}
+					}
+				}
+			}
+
+			if (k >= 6) {
+				vector<Token*> toks(6);
+				string sorted_sig = "";
+				sorted_sig.reserve(11);
+				for (int i = 0; i < num_tokens; i++) {
+					for (int j = i + 1; j < num_tokens; j++) {
+						for (int l = j + 1; l < num_tokens; l++) {
+							for (int m = l + 1; m < num_tokens; m++) {
+								for (int n = m + 1; n < num_tokens; n++) {
+									for (int o = n + 1; o < num_tokens; o++) {
+										toks[0] = Tokens[i];
+										toks[1] = Tokens[j];
+										toks[2] = Tokens[l];
+										toks[3] = Tokens[m];
+										toks[4] = Tokens[n];
+										toks[5] = Tokens[o];
+
+										sort(toks.begin(), toks.end());
+
+										// The sorted_sig is what is used to hash the combination
+										// Essentially, it is each token's id in the sorted tokens appended to a string with spaces between 
+										sorted_sig = "";
+										sorted_sig += toks[0]->get_id();
+										sorted_sig += " ";
+										sorted_sig += toks[1]->get_id();
+										sorted_sig += " ";
+										sorted_sig += toks[2]->get_id();
+										sorted_sig += " ";
+										sorted_sig += toks[3]->get_id();
+										sorted_sig += " ";
+										sorted_sig += toks[4]->get_id();
+										sorted_sig += " ";
+										sorted_sig += toks[5]->get_id();
+
+										comb_id = str_hash(sorted_sig);
+										Combination comb(toks, comb_id);
+										all_combinations.push_back(comb);
+										Combination* comb_ptr = &all_combinations[all_combinations.size() - 1];
+										Combinations.push_back(check_combination(comb_id, comb_ptr));
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+			if (k >= 7) {
+				vector<Token*> toks(7);
+				string sorted_sig = "";
+				sorted_sig.reserve(13);
+				for (int i = 0; i < num_tokens; i++) {
+					for (int j = i + 1; j < num_tokens; j++) {
+						for (int l = j + 1; l < num_tokens; l++) {
+							for (int m = l + 1; m < num_tokens; m++) {
+								for (int n = m + 1; n < num_tokens; n++) {
+									for (int o = n + 1; o < num_tokens; o++) {
+										for (int p = o + 1; p < num_tokens; p++) {
+											toks[0] = Tokens[i];
+											toks[1] = Tokens[j];
+											toks[2] = Tokens[l];
+											toks[3] = Tokens[m];
+											toks[4] = Tokens[n];
+											toks[5] = Tokens[o];
+											toks[6] = Tokens[p];
+
+											sort(toks.begin(), toks.end());
+
+											// The sorted_sig is what is used to hash the combination
+											// Essentially, it is each token's id in the sorted tokens appended to a string with spaces between 
+											sorted_sig = "";
+											sorted_sig += toks[0]->get_id();
+											sorted_sig += " ";
+											sorted_sig += toks[1]->get_id();
+											sorted_sig += " ";
+											sorted_sig += toks[2]->get_id();
+											sorted_sig += " ";
+											sorted_sig += toks[3]->get_id();
+											sorted_sig += " ";
+											sorted_sig += toks[4]->get_id();
+											sorted_sig += " ";
+											sorted_sig += toks[5]->get_id();
+											sorted_sig += " ";
+											sorted_sig += toks[6]->get_id();
+
+											comb_id = str_hash(sorted_sig);
+											Combination comb(toks, comb_id);
+											all_combinations.push_back(comb);
+											Combination* comb_ptr = &all_combinations[all_combinations.size() - 1];
+											Combinations.push_back(check_combination(comb_id, comb_ptr));
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		Combination* check_combination(int hash, Combination* combo) {
+
+			// If the hash is not in the map (meaning the combo isn't either); insert it
+			if (combo_hash_map.count(hash) == 0) {
+				combo_hash_map.insert({hash, combo});
+				return combo;
+			}
+
+			// If the hash is found (meaning the combo as well) increase the frequency
+			else {
+				Combination* t = combo_hash_map[hash];
+				t->frequency++;
+				return t;
+			}
+		}
+
 		void execute() {
 			// Runs the necessary functions to generate tokens and correctly format them according to UPM 
+			Combinations.reserve(61000);
 			generate_tokens();
 			token_concatenator();
 			generate_token_objects();
 			generate_token_map();
-		}
-
-		void generate_combinations(int k) {
-			// n is the amount of total elements to make the combinations
-			// k is the amount of elements in each token; Ex: if k = 3 there would be three elements in each combination
-			// Remember n choose k (nCk)
-
-			// n is the total number of Tokens pointers in the Token* vector
-			int n = Tokens.size();
-
-			// Base is the vector that contains the first k elements of the given array
-			vector<int> base;
-
-			// All the combinations
-			vector<vector<int>> total_combinations(999999, vector<int>(k));
-
-			// Vector of Combination objects
-			vector<Combination> total_combination_objects;
-
-			// Populate base with the first k elements
-			for (int base_i = 0; base_i < k; base_i++) {
-				base.push_back(base_i);
-			}
-
-			total_combinations.at(0) = base;
-
-			// This is the vector that we are actually going to use to generate combinations
-			vector<int> current = base;
-			
-			// i is the current index in the combination
-			int i = k - 1;
-			
-			// This is what we use to add the combination to a specific index in the vector
-			int combinations_added = 1;
-
-			// Must iterate through every position in the vector
-			while (i >= 0) {
-
-				// As long as the value at index i in current is less than n - k + i, continue
-				int current_index = k - 1;
-				
-				while (current[i] < n - k + i) {
-
-					// While the value of the current_index is less than it's defined max value
-					while (current[current_index] < n - k + current_index && current_index >= i) {
-						current[current_index] += 1;
-						total_combinations.at(combinations_added) = current;
-						combinations_added++;
-					}
-
-					current_index--;
-
-					// Does two loops in order to reset the values, then check the values again
-					for (int x = 0; x < 2; x++){
-						if (current[current_index] < n - k + current_index) {
-							for (int x = current_index; x < k; x++) {
-								if (x == current_index) {
-									current[x]++;
-								}
-								else {
-									current[x] = current[x - 1] + 1;
-								}
-							}
-							total_combinations.at(combinations_added) = current;
-							combinations_added++;
-						}
-
-						// Sets the current_index to the first value that is not at the max
-						for (int check = k - 1; check >= 0; check--) {
-							if (current[check] < n - k + check) {
-								current_index = check;
-								break;
-							}
-						}
-					}
-				}
-
-				i--;
-				//Also have to reset at this point
-				if (i >= 0) {
-					for (int x = i; x < k; x++) {
-						if (x == i) {
-							current[x]++;
-						}
-
-						else { 
-							current[x] = current[x - 1] + 1;
-						}
-					}
-				
-					total_combinations.at(combinations_added) = current;
-					combinations_added++;
-				}
-			}
-
-			cout << combinations_added << endl;
+			generate_combinations(6);
 		}
 };
 
@@ -344,7 +545,7 @@ long long int factorial(int num) {
 	return number;
 }
 
-long n_combinations(int n, int r) {
+long long int n_combinations(int n, int r) {
 	// Returns nCr
 	return factorial(n) / (factorial(r) * factorial(n - r));
 }
@@ -355,11 +556,40 @@ int main() {
 	// Reserving 500 "spots" of memory so that it doesn't change the position of the values for 500 values
 	auto start = chrono::high_resolution_clock::now();
 	all_tokens.reserve(500);
+
+	// 920000 is a function of the max number of combos for each product * the number of products
+	all_combinations.reserve(920000);
 	Product amazon("Amazon", "ASUS VivoBook F510UA 15.6 Full HD Nanoedge Laptop, Intel Core i5-8250U Processor, 8 GB DDR4 RAM, 1 TB HDD, USB-C, Fingerprint, Windows 10 Home - F510UA-AH51, Star Gray");
 	Product newegg("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
+	Product newegg2("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
+	Product newegg3("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
+	Product newegg4("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
+	Product newegg5("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
+	Product newegg6("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
+	Product newegg7("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
+	Product newegg8("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
+	Product newegg9("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
+	Product newegg10("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
+	Product newegg11("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
+	Product newegg12("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
+	Product newegg13("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
+	Product newegg14("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
+
 	amazon.execute();
-	amazon.generate_combinations(6);
 	newegg.execute();
+	newegg2.execute();
+	newegg3.execute();
+	newegg4.execute();
+	newegg5.execute();
+	newegg6.execute();
+	newegg7.execute();
+	newegg8.execute();
+	newegg9.execute();
+	newegg10.execute();
+	newegg11.execute();
+	newegg12.execute();
+	newegg13.execute();
+	newegg14.execute();
 	auto stop = chrono::high_resolution_clock::now();
 	auto duration = chrono::duration_cast<chrono::milliseconds>(stop - start);
 	cout << duration.count() << endl;
