@@ -48,7 +48,7 @@ class Combination {
 		int id; // The hash of the combination
 		int frequency; // The amount of times the combination occurs throughout all the product titles
 		vector<Token*> tokens; // The vecotr of Tokens that the combination contains
-		int dacc; 
+		double dacc; 
 
 		Combination(vector<Token*> vec, int hash) {
 			tokens = vec;
@@ -91,6 +91,8 @@ class Token {
 		
 		// If all of the characters are number, then it most likely represents an item model (UPM[4])
 		if (all_of(value.begin(), value.end(), ::isdigit)) {
+			
+			// Numeric but not attribute
 			semantic = 4;
 			return;
 		}
@@ -101,6 +103,8 @@ class Token {
 			int found = value.find(attribute);
 			if (found != value.npos) {
 				if (isdigit(value[found - 1])){
+
+					// Token represents an attribute
 					semantic = 1;
 					return;
 				}
@@ -116,6 +120,8 @@ class Token {
 			}
 
 			if (digits > 0) {
+
+				// Mix of characters and numbers, but not an attribute
 				semantic = 3;
 				return;
 			}
@@ -261,6 +267,7 @@ class Product {
 			hash<string> str_hash;
 			int comb_id;
 			int num_tokens = Tokens.size();
+			double distance;
 
 			if (k >= 2) {
 				vector<Token*> toks(2);
@@ -282,6 +289,9 @@ class Product {
 						// The hash for each combo
 						comb_id = str_hash(sorted_sig);
 
+						// Compute the Euclidean distance for the combination (UPM[6])
+						distance = sqrt(pow(i, 2) + pow(j - 1, 2));
+
 						// Creation of the Combination object
 						Combination comb(toks, comb_id);
 
@@ -292,7 +302,7 @@ class Product {
 						Combination* comb_ptr = &all_combinations[all_combinations.size() - 1];
 
 						// Add the combination pointer to the Combinations* vector of the product
-						Combinations.push_back(check_combination(comb_id, comb_ptr));
+						Combinations.push_back(add_combination(comb_id, comb_ptr, distance));
 					}
 				}
 			}
@@ -319,10 +329,14 @@ class Product {
 							sorted_sig += toks[2]->get_id();
 
 							comb_id = str_hash(sorted_sig);
+
+							// Compute the Euclidean distance for the combination (UPM[6])
+							distance = sqrt(pow(i, 2) + pow(j - 1, 2) + pow(l - 2, 2));
+
 							Combination comb(toks, comb_id);
 							all_combinations.push_back(comb);
 							Combination* comb_ptr = &all_combinations[all_combinations.size() - 1];
-							Combinations.push_back(check_combination(comb_id, comb_ptr));
+							Combinations.push_back(add_combination(comb_id, comb_ptr, distance));
 						}
 					}
 				}
@@ -356,10 +370,14 @@ class Product {
 								sorted_sig += toks[3]->get_id();
 
 								comb_id = str_hash(sorted_sig);
+
+								// Compute the Euclidean distance for the combination (UPM[6])
+								distance = sqrt(pow(i, 2) + pow(j - 1, 2) + pow(l - 2, 2) + pow(m - 3, 2));
+
 								Combination comb(toks, comb_id);
 								all_combinations.push_back(comb);
 								Combination* comb_ptr = &all_combinations[all_combinations.size() - 1];
-								Combinations.push_back(check_combination(comb_id, comb_ptr));
+								Combinations.push_back(add_combination(comb_id, comb_ptr, distance));
 							}
 						}
 					}
@@ -398,10 +416,14 @@ class Product {
 									sorted_sig += toks[4]->get_id();
 
 									comb_id = str_hash(sorted_sig);
+
+									// Compute the Euclidean distance for the combination (UPM[6])
+									distance = sqrt(pow(i, 2) + pow(j - 1, 2) + pow(l - 2, 2) + pow(m - 3, 2) + pow(n - 4, 2));
+
 									Combination comb(toks, comb_id);
 									all_combinations.push_back(comb);
 									Combination* comb_ptr = &all_combinations[all_combinations.size() - 1];
-									Combinations.push_back(check_combination(comb_id, comb_ptr));
+									Combinations.push_back(add_combination(comb_id, comb_ptr, distance));
 								}
 							}
 						}
@@ -444,10 +466,14 @@ class Product {
 										sorted_sig += toks[5]->get_id();
 
 										comb_id = str_hash(sorted_sig);
+
+										// Compute the Euclidean distance for the combination (UPM[6])
+										distance = sqrt(pow(i, 2) + pow(j - 1, 2) + pow(l - 2, 2) + pow(m - 3, 2) + pow(n - 4, 2) + pow(o - 5, 2));
+
 										Combination comb(toks, comb_id);
 										all_combinations.push_back(comb);
 										Combination* comb_ptr = &all_combinations[all_combinations.size() - 1];
-										Combinations.push_back(check_combination(comb_id, comb_ptr));
+										Combinations.push_back(add_combination(comb_id, comb_ptr, distance));
 									}
 								}
 							}
@@ -495,10 +521,14 @@ class Product {
 											sorted_sig += toks[6]->get_id();
 
 											comb_id = str_hash(sorted_sig);
+
+											// Compute the Euclidean distance for the combination (UPM[6])
+											distance = sqrt(pow(i, 2) + pow(j - 1, 2) + pow(l - 2, 2) + pow(m - 3, 2) + pow(n - 4, 2) + pow(o - 5, 2) + pow(p - 6, 2));
+
 											Combination comb(toks, comb_id);
 											all_combinations.push_back(comb);
 											Combination* comb_ptr = &all_combinations[all_combinations.size() - 1];
-											Combinations.push_back(check_combination(comb_id, comb_ptr));
+											Combinations.push_back(add_combination(comb_id, comb_ptr, distance));
 										}
 									}
 								}
@@ -509,10 +539,11 @@ class Product {
 			}
 		}
 
-		Combination* check_combination(int hash, Combination* combo) {
+		Combination* add_combination(int hash, Combination* combo, double distance) {
 
 			// If the hash is not in the map (meaning the combo isn't either); insert it
 			if (combo_hash_map.count(hash) == 0) {
+				combo->dacc = distance;
 				combo_hash_map.insert({hash, combo});
 				return combo;
 			}
@@ -521,6 +552,7 @@ class Product {
 			else {
 				Combination* t = combo_hash_map[hash];
 				t->frequency++;
+				t->dacc += distance;
 				return t;
 			}
 		}
@@ -592,5 +624,6 @@ int main() {
 	auto stop = chrono::high_resolution_clock::now();
 	auto duration = chrono::duration_cast<chrono::milliseconds>(stop - start);
 	cout << duration.count() << endl;
+
 	return 1;
 }
