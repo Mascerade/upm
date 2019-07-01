@@ -272,15 +272,26 @@ class Product {
 						toks[1] = Tokens[j];
 						sort(toks.begin(), toks.end());
 
+						// The sorted_sig is what is used to hash the combination
+						// Essentially, it is each token's id in the sorted tokens appended to a string with spaces between 
 						sorted_sig = "";
 						sorted_sig += toks[0]->get_id();
 						sorted_sig += " ";
 						sorted_sig += toks[1]->get_id();
 
+						// The hash for each combo
 						comb_id = str_hash(sorted_sig);
+
+						// Creation of the Combination object
 						Combination comb(toks, comb_id);
+
+						// Add it to the overall vecotor of combinations
 						all_combinations.push_back(comb);
+
+						// The pointer the *points* to the combination in all_combinations
 						Combination* comb_ptr = &all_combinations[all_combinations.size() - 1];
+
+						// Add the combination pointer to the Combinations* vector of the product
 						Combinations.push_back(check_combination(comb_id, comb_ptr));
 					}
 				}
@@ -298,6 +309,8 @@ class Product {
 							toks[2] = Tokens[l];
 							sort(toks.begin(), toks.end());
 
+							// The sorted_sig is what is used to hash the combination
+							// Essentially, it is each token's id in the sorted tokens appended to a string with spaces between 
 							sorted_sig = "";
 							sorted_sig += toks[0]->get_id();
 							sorted_sig += " ";
@@ -330,6 +343,9 @@ class Product {
 								toks[3] = Tokens[m];
 								sort(toks.begin(), toks.end());
 
+
+								// The sorted_sig is what is used to hash the combination
+								// Essentially, it is each token's id in the sorted tokens appended to a string with spaces between 
 								sorted_sig = "";
 								sorted_sig += toks[0]->get_id();
 								sorted_sig += " ";
@@ -367,6 +383,9 @@ class Product {
 
 									sort(toks.begin(), toks.end());
 									
+
+									// The sorted_sig is what is used to hash the combination
+									// Essentially, it is each token's id in the sorted tokens appended to a string with spaces between 
 									sorted_sig = "";
 									sorted_sig += toks[0]->get_id();
 									sorted_sig += " ";
@@ -409,6 +428,8 @@ class Product {
 
 										sort(toks.begin(), toks.end());
 
+										// The sorted_sig is what is used to hash the combination
+										// Essentially, it is each token's id in the sorted tokens appended to a string with spaces between 
 										sorted_sig = "";
 										sorted_sig += toks[0]->get_id();
 										sorted_sig += " ";
@@ -446,7 +467,6 @@ class Product {
 								for (int n = m + 1; n < num_tokens; n++) {
 									for (int o = n + 1; o < num_tokens; o++) {
 										for (int p = o + 1; p < num_tokens; p++) {
-											vector<Token*> toks;
 											toks[0] = Tokens[i];
 											toks[1] = Tokens[j];
 											toks[2] = Tokens[l];
@@ -457,6 +477,8 @@ class Product {
 
 											sort(toks.begin(), toks.end());
 
+											// The sorted_sig is what is used to hash the combination
+											// Essentially, it is each token's id in the sorted tokens appended to a string with spaces between 
 											sorted_sig = "";
 											sorted_sig += toks[0]->get_id();
 											sorted_sig += " ";
@@ -488,10 +510,14 @@ class Product {
 		}
 
 		Combination* check_combination(int hash, Combination* combo) {
+
+			// If the hash is not in the map (meaning the combo isn't either); insert it
 			if (combo_hash_map.count(hash) == 0) {
 				combo_hash_map.insert({hash, combo});
 				return combo;
 			}
+
+			// If the hash is found (meaning the combo as well) increase the frequency
 			else {
 				Combination* t = combo_hash_map[hash];
 				t->frequency++;
