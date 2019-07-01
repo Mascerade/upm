@@ -41,6 +41,14 @@ vector<Combination> all_combinations;
 // Stores all the combinations with their hash as their identifier
 unordered_map<int, Combination*> combo_hash_map;
 
+// Total length of titles
+int lt = 0;
+
+// Average length of titles
+double lt_avg = 0.0;
+
+// Number of products
+int lprod = 0;
 
 class Combination {
 	// Stores the attributes that a combination has according to UPM[4 - 5]
@@ -162,6 +170,7 @@ class Product {
 			// Set the attributes of of the product
 			this->vendor = vendor;
 			this->title = title;
+			this->preparation();
 		}
 
 		void generate_tokens() {
@@ -566,12 +575,19 @@ class Product {
 			}
 		}
 
-		void execute() {
+		void preparation() {
 			// Runs the necessary functions to generate tokens and correctly format them according to UPM 
 			Combinations.reserve(61000);
 			generate_tokens();
 			token_concatenator();
 			generate_token_objects();
+			lt += Tokens.size();
+			lprod += 1;
+			lt_avg = (double) lt / lprod;
+		}
+
+		void execute() {
+			// Does the main algorithmic processes
 			generate_token_map();
 			generate_combinations(6);
 		}
@@ -633,6 +649,6 @@ int main() {
 	auto stop = chrono::high_resolution_clock::now();
 	auto duration = chrono::duration_cast<chrono::milliseconds>(stop - start);
 	cout << duration.count() << endl;
-
+	cout << lt_avg << endl;
 	return 1;
 }
