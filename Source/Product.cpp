@@ -63,7 +63,7 @@ class Token {
 		int id;
 		int frequency;
 		string value;
-		char semantic;
+		int semantic;
 	
 	Token(string value) {
 		this->value = value;
@@ -91,7 +91,7 @@ class Token {
 		
 		// If all of the characters are number, then it most likely represents an item model (UPM[4])
 		if (all_of(value.begin(), value.end(), ::isdigit)) {
-			semantic = 'I';
+			semantic = 4;
 			return;
 		}
 
@@ -101,7 +101,7 @@ class Token {
 			int found = value.find(attribute);
 			if (found != value.npos) {
 				if (isdigit(value[found - 1])){
-					semantic = 'A';
+					semantic = 1;
 					return;
 				}
 			}
@@ -116,14 +116,14 @@ class Token {
 			}
 
 			if (digits > 0) {
-				semantic = 'I';
+				semantic = 3;
 				return;
 			}
 
 		}
 
 		// If it is neither an attribute nor an item model, consider it a normal token (UPM[4])
-		semantic = 'N';
+		semantic = 5;
 	}
 
 	int get_id() {
@@ -222,7 +222,7 @@ class Product {
 
 			while (Tokens.size() > MAX_TOKENS) {
 				for (int i = Tokens.size() - 1; i >= 0; i--) {
-					if (Tokens[i]->semantic == 'N') {
+					if (Tokens[i]->semantic == 5) {
 						Tokens.erase(Tokens.begin() + i);
 						break;
 					}
@@ -549,7 +549,6 @@ long long int n_combinations(int n, int r) {
 	// Returns nCr
 	return factorial(n) / (factorial(r) * factorial(n - r));
 }
-
 
 
 int main() {
