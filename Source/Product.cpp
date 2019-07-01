@@ -49,6 +49,7 @@ class Combination {
 		int frequency; // The amount of times the combination occurs throughout all the product titles
 		vector<Token*> tokens; // The vecotr of Tokens that the combination contains
 		double dacc; 
+		double dacc_avg;
 
 		Combination(vector<Token*> vec, int hash) {
 			tokens = vec;
@@ -544,6 +545,11 @@ class Product {
 			// If the hash is not in the map (meaning the combo isn't either); insert it
 			if (combo_hash_map.count(hash) == 0) {
 				combo->dacc = distance;
+
+				// For each combination in the combo_hash_map, compute the average distance by multiplying it by dividing it by its frequency
+				combo->dacc_avg = distance;
+
+				// Insert the new combination into the combination hash map
 				combo_hash_map.insert({hash, combo});
 				return combo;
 			}
@@ -553,6 +559,9 @@ class Product {
 				Combination* t = combo_hash_map[hash];
 				t->frequency++;
 				t->dacc += distance;
+
+				// For each combination in the combo_hash_map, compute the average distance by multiplying it by dividing it by its frequency
+				t->dacc_avg = t->dacc / t->frequency;
 				return t;
 			}
 		}
