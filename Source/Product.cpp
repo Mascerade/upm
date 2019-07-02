@@ -48,6 +48,9 @@ int lt = 0;
 // Average length of titles
 double lt_avg = 0.0;
 
+// Average length of combinations
+double lc_avg = 0.0;
+
 // Number of products
 int lprod = 0;
 
@@ -57,6 +60,16 @@ int K;
 // Array of the distribution of semantics 
 int semantics_distribution[] = {0, 0, 0, 0, 0};
 
+// Array of the weights of the semantics distribution
+double semantics_weights[5];
+
+// Constant a in the algorithm
+double const A = 1.0;
+
+// Constant b in the algorithm
+double const b = 1.0;
+
+// Used to determine which tokens are semantic 2
 int semantic2 = 0;
 
 
@@ -68,11 +81,13 @@ class Combination {
 		vector<Token*> tokens; // The vecotr of Tokens that the combination contains
 		double dacc; 
 		double dacc_avg;
+		int lc;
 
-		Combination(vector<Token*> vec, int hash) {
+		Combination(vector<Token*> vec, int hash, int length_of_combo) {
 			tokens = vec;
 			id = hash;
 			frequency = 1;
+			lc = length_of_combo;
 		}
 };
 
@@ -191,10 +206,10 @@ class Product {
 		int high_combo_hash;
 
 		// The highest scoring Combination
-		Combination* high_combo;
+		Combination *high_combo;
 
 		// Highest score
-		int high_score;
+		double high_score = -1.0;
 
 
 		Product(string vendor, string title) {
@@ -332,10 +347,14 @@ class Product {
 						distance = sqrt(pow(i, 2) + pow(j - 1, 2));
 
 						// Creation of the Combination object
-						Combination comb(toks, comb_id);
+						Combination comb(toks, comb_id, 2);
 
 						// Add it to the overall vecotor of combinations
 						all_combinations.push_back(comb);
+
+						// Increase occurance of this particular combination
+						lc_avg += 2;
+
 
 						// The pointer the *points* to the combination in all_combinations
 						Combination* comb_ptr = &all_combinations[all_combinations.size() - 1];
@@ -372,9 +391,15 @@ class Product {
 							// Compute the Euclidean distance for the combination (UPM[6])
 							distance = sqrt(pow(i, 2) + pow(j - 1, 2) + pow(l - 2, 2));
 
-							Combination comb(toks, comb_id);
+							Combination comb(toks, comb_id, 3);
+
 							all_combinations.push_back(comb);
+							
+							// Increase occurance of this particular combination
+							lc_avg += 3;
+
 							Combination* comb_ptr = &all_combinations[all_combinations.size() - 1];
+							
 							Combinations.push_back(add_combination(comb_id, comb_ptr, distance));
 						}
 					}
@@ -413,7 +438,11 @@ class Product {
 								// Compute the Euclidean distance for the combination (UPM[6])
 								distance = sqrt(pow(i, 2) + pow(j - 1, 2) + pow(l - 2, 2) + pow(m - 3, 2));
 
-								Combination comb(toks, comb_id);
+								Combination comb(toks, comb_id, 4);
+						
+								// Increase occurance of this particular combination
+								lc_avg += 4;
+								
 								all_combinations.push_back(comb);
 								Combination* comb_ptr = &all_combinations[all_combinations.size() - 1];
 								Combinations.push_back(add_combination(comb_id, comb_ptr, distance));
@@ -459,8 +488,12 @@ class Product {
 									// Compute the Euclidean distance for the combination (UPM[6])
 									distance = sqrt(pow(i, 2) + pow(j - 1, 2) + pow(l - 2, 2) + pow(m - 3, 2) + pow(n - 4, 2));
 
-									Combination comb(toks, comb_id);
+									Combination comb(toks, comb_id, 5);
 									all_combinations.push_back(comb);
+									
+									// Increase occurance of this particular combination
+									lc_avg += 5;
+									
 									Combination* comb_ptr = &all_combinations[all_combinations.size() - 1];
 									Combinations.push_back(add_combination(comb_id, comb_ptr, distance));
 								}
@@ -509,8 +542,12 @@ class Product {
 										// Compute the Euclidean distance for the combination (UPM[6])
 										distance = sqrt(pow(i, 2) + pow(j - 1, 2) + pow(l - 2, 2) + pow(m - 3, 2) + pow(n - 4, 2) + pow(o - 5, 2));
 
-										Combination comb(toks, comb_id);
+										Combination comb(toks, comb_id, 6);
 										all_combinations.push_back(comb);
+										
+										// Increase occurance of this particular combination
+										lc_avg += 6;
+
 										Combination* comb_ptr = &all_combinations[all_combinations.size() - 1];
 										Combinations.push_back(add_combination(comb_id, comb_ptr, distance));
 									}
@@ -521,7 +558,7 @@ class Product {
 				}
 			}
 
-			if (k >= 100000) {
+			if (k >= 70) {
 				vector<Token*> toks(7);
 				string sorted_sig = "";
 				sorted_sig.reserve(13);
@@ -564,8 +601,12 @@ class Product {
 											// Compute the Euclidean distance for the combination (UPM[6])
 											distance = sqrt(pow(i, 2) + pow(j - 1, 2) + pow(l - 2, 2) + pow(m - 3, 2) + pow(n - 4, 2) + pow(o - 5, 2) + pow(p - 6, 2));
 
-											Combination comb(toks, comb_id);
+											Combination comb(toks, comb_id, 7);
 											all_combinations.push_back(comb);
+											
+											// Increase occurance of this particular combination
+											lc_avg += 7;
+
 											Combination* comb_ptr = &all_combinations[all_combinations.size() - 1];
 											Combinations.push_back(add_combination(comb_id, comb_ptr, distance));
 										}
@@ -589,6 +630,7 @@ class Product {
 
 				// Insert the new combination into the combination hash map
 				combo_hash_map.insert({hash, combo});
+
 				return combo;
 			}
 
@@ -602,6 +644,19 @@ class Product {
 				t->dacc_avg = t->dacc / t->frequency;
 				return t;
 			}
+		}
+
+		double yc(Combination* c) {
+			double sum = 0;
+			for (Token* t : c->tokens) {
+
+				// log(lprod / t->frequency) is 0 when log(1)
+				sum += (double) ( (double) log( (double) lprod / t->frequency) ) * (double) semantics_weights[t->semantic] / (double) ( (1 - b) + ( (double) ( (double) (b*K) / (double) lc_avg)));
+			}
+
+			// cout << sum << endl;
+			return sum;
+
 		}
 
 		void preparation() {
@@ -621,6 +676,22 @@ class Product {
 			// Does the main algorithmic processes
 			generate_token_map();
 			generate_combinations(K);
+		}
+
+		void cluster_creation() {
+			double new_score;
+			for (Combination* c : Combinations) {
+				// /cout << (double) pow(yc(c), 2) << endl;
+				// cout << (double) ( (double) pow(yc(c), 2)) / (double) (A + c->dacc_avg) << endl;
+				new_score = (double) ( (double) pow(yc(c), 2) / (double) (A + c->dacc_avg)) * (double) log(c->frequency);
+				//cout << new_score << endl;
+				if (new_score > high_score) {
+					high_score = new_score;
+					high_combo = c;
+					high_combo_hash = c->id;
+					//cout << c->id;
+				}		
+			}
 		}
 };
 
@@ -646,40 +717,59 @@ int main() {
 
 	// 920000 is a function of the max number of combos for each product * the number of products
 	all_combinations.reserve(920000);
-	Product amazon("Amazon", "ASUS VivoBook F510UA 15.6 Full HD Nanoedge Laptop, Intel Core i5-8250U Processor, 8 GB DDR4 RAM, 1 TB HDD, USB-C, Fingerprint, Windows 10 Home - F510UA-AH51, Star Gray");
-	Product newegg("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
-	Product newegg2("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
-	Product newegg3("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
-	Product newegg4("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
-	Product newegg5("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
-	Product newegg6("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
-	Product newegg7("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
-	Product newegg8("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
-	Product newegg9("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
-	Product newegg10("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
-	Product newegg11("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
-	Product newegg12("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
-	Product newegg13("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
-	Product newegg14("Newegg", "ASUS VivoBook F510UA-AH55 Laptop Notebook Thin and Lightweight FHD WideView Laptop, 8th Gen Intel Core i5-8250U, 8GB DDR4 RAM, 128GB SSD+1TB HDD, USB Type-C, ASUS NanoEdge Display, Fingerprint Reader,");
+	Product amazon("Amazon", "Philips 276E9QDSB 27 Frameless Monitor, Full HD 1920x1080 IPS, 75Hz, 124 sRGB & 93 NTSC, FreeSync, HDMI/DVI-D/VGA, VESA");
+	Product newegg("Walmart", "Philips 276E9QDSB 27 16:9 IPS Monitor");
+	Product something("Newegg", "Philips 276E9QDSB 27 monitor, Full HD 1920x1080 IPS panel, Ultra Wide-Color 124 sRGB & 93 NTSC coverage, AMD FreeSync, HDMI/DVI-D/VGA, Audio out, Flicker-Free, Narrow borders, LowBlue mode, VESA compatible, EPEAT Silver,");
+	Product another("TigerDirect", "Philips Monitor 27 IPS Panel Full HD 1920x1080 75Hz FreeSync Ultra Wide-Color VGA DVI-D HDMI 276E9QDSB");
 
 	amazon.execute();
 	newegg.execute();
-	newegg2.execute();
-	newegg3.execute();
-	newegg4.execute();
-	newegg5.execute();
-	newegg6.execute();
-	newegg7.execute();
-	newegg8.execute();
-	newegg9.execute();
-	newegg10.execute();
-	newegg11.execute();
-	newegg12.execute();
-	newegg13.execute();
-	newegg14.execute();
+	something.execute();
+	another.execute();
+
+	for (int i = 0; i < 5; i++) {
+		semantics_weights[i] = (double) all_tokens.size() / semantics_distribution[i];
+		//cout << semantics_weights[i] << endl;
+	}
+
+	lc_avg = (double) lc_avg / all_combinations.size();
+
+
+	cout << "____________________ Amazon" << endl;
+
+	amazon.cluster_creation();
+	cout << amazon.high_score << endl;
+	for (Token* x : amazon.high_combo->tokens) {
+		cout << x->value << endl;
+	}
+	
+	cout << "_____________________ Newegg" << endl;
+	newegg.cluster_creation();
+	cout << newegg.high_score << endl;
+	for (Token* x : newegg.high_combo->tokens) {
+		cout << x->value << endl;
+	}
+	cout << "_____________________ Something" << endl;
+
+	something.cluster_creation();
+	cout << something.high_score << endl;
+	for (Token* x : something.high_combo->tokens) {
+		cout << x->value << endl;
+	}
+	cout << "_____________________ Another" << endl;
+
+	another.cluster_creation();
+	cout << another.high_score << endl;
+	for (Token* x : another.high_combo->tokens) {
+		cout << x->value << endl;
+	}
+
+	cout << "__________________" << endl;
+
 	auto stop = chrono::high_resolution_clock::now();
 	auto duration = chrono::duration_cast<chrono::milliseconds>(stop - start);
 	cout << duration.count() << endl;
-	cout << semantics_distribution[2] << endl;
+
+
 	return 1;
 }
