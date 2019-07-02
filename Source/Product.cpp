@@ -659,6 +659,14 @@ class Product {
 
 		}
 
+		void display() {
+			cout << "_____________________ " << vendor << endl;
+			cout << high_score << endl;
+			for (Token* t : high_combo->tokens) {
+				cout << t->value << endl;
+			}
+		}
+
 		void preparation() {
 			// Runs the necessary functions to generate tokens and correctly format them according to UPM 
 			Combinations.reserve(61000);
@@ -717,15 +725,29 @@ int main() {
 
 	// 920000 is a function of the max number of combos for each product * the number of products
 	all_combinations.reserve(920000);
-	Product amazon("Amazon", "Philips 276E9QDSB 27 Frameless Monitor, Full HD 1920x1080 IPS, 75Hz, 124 sRGB & 93 NTSC, FreeSync, HDMI/DVI-D/VGA, VESA");
-	Product newegg("Walmart", "Philips 276E9QDSB 27 16:9 IPS Monitor");
-	Product something("Newegg", "Philips 276E9QDSB 27 monitor, Full HD 1920x1080 IPS panel, Ultra Wide-Color 124 sRGB & 93 NTSC coverage, AMD FreeSync, HDMI/DVI-D/VGA, Audio out, Flicker-Free, Narrow borders, LowBlue mode, VESA compatible, EPEAT Silver,");
-	Product another("TigerDirect", "Philips Monitor 27 IPS Panel Full HD 1920x1080 75Hz FreeSync Ultra Wide-Color VGA DVI-D HDMI 276E9QDSB");
+	Product amazon("Amazon", "amd ryzen 7 eight core 1700x 3.80ghz socket am4 processor retail");
+	Product newegg("Walmart", "amd ryzen 7 1700x 8 core am4 cpu/processor");
+	Product something("Newegg", "amd ryzen 7 1700x 3.4ghz 16mb l3 processor");
+	Product another("TigerDirect", "amd ryzen 7 1700x 95 w 8 core/16 threads 3.8ghz 4mb cpu black");
+	Product x("X", "amd ryzen 7 1700x 95 w 8 core/16 threads 3.8ghz 4mb cpu black");
+	Product y("Y", "md ryzen 7 1700x 8 core 16 thread am4 cpu/processor");
+	Product z("Z", "wof processor amd ryzen 7 1700x 8 x 3.4 ghz octa c");
+	Product a("A", "amd ryzen 7 1700x cpu am4 3.4ghz 3.8 turbo 8 core 95w 20mb cac");
+	Product b("B", "amd prozessor cpu ryzen 7 sockel am4 1700x 8 x 3 4 ghz 16 mb 95w 14nm box yd170xbcaewof");
+	Product c("C", "intel core intel core i7 7700 processor 8m cache up to 4.20 ghz");
+	Product d("D", "intel core i7 7700 3.60ghz s1151 8mb cache kaby lake cpu");
 
 	amazon.execute();
 	newegg.execute();
 	something.execute();
 	another.execute();
+	x.execute();
+	y.execute();
+	z.execute();
+	a.execute();
+	b.execute();
+	c.execute();
+	d.execute();
 
 	for (int i = 0; i < 5; i++) {
 		semantics_weights[i] = (double) all_tokens.size() / semantics_distribution[i];
@@ -733,43 +755,38 @@ int main() {
 	}
 
 	lc_avg = (double) lc_avg / all_combinations.size();
-
-
-	cout << "____________________ Amazon" << endl;
-
-	amazon.cluster_creation();
-	cout << amazon.high_score << endl;
-	for (Token* x : amazon.high_combo->tokens) {
-		cout << x->value << endl;
-	}
 	
-	cout << "_____________________ Newegg" << endl;
+	amazon.cluster_creation();
 	newegg.cluster_creation();
-	cout << newegg.high_score << endl;
-	for (Token* x : newegg.high_combo->tokens) {
-		cout << x->value << endl;
-	}
-	cout << "_____________________ Something" << endl;
-
 	something.cluster_creation();
-	cout << something.high_score << endl;
-	for (Token* x : something.high_combo->tokens) {
-		cout << x->value << endl;
-	}
-	cout << "_____________________ Another" << endl;
-
 	another.cluster_creation();
-	cout << another.high_score << endl;
-	for (Token* x : another.high_combo->tokens) {
-		cout << x->value << endl;
-	}
+	x.cluster_creation();
+	y.cluster_creation();
+	z.cluster_creation();
+	a.cluster_creation();
+	b.cluster_creation();
+	c.cluster_creation();
+	d.cluster_creation();
+
+	amazon.display();
+	newegg.display();
+	something.display();
+	another.display();
+	x.display();
+	y.display();
+	z.display();
+	a.display();
+	b.display();
+	c.display();
+	d.display();
 
 	cout << "__________________" << endl;
 
 	auto stop = chrono::high_resolution_clock::now();
 	auto duration = chrono::duration_cast<chrono::milliseconds>(stop - start);
 	cout << duration.count() << endl;
-
+	cout << K << endl;
+	cout << semantics_distribution[2] << endl;
 
 	return 1;
 }
