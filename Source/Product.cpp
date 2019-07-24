@@ -22,7 +22,7 @@ class Token;
 class Combination;
 
 // The attributes that are used to determine if a specific token is an attribute
-static const string attributes[] = {"bytes", "hz", "bps", "meters","gb", "mb", "tb", "kb", "km", "kilometers", "\"", "'"};
+static const string attributes[] = {"bytes", "hz", "bps", "meters","gb", "mb", "tb", "kb", "km", "kilometers", "w", "\"", "'"};
 
 // Punctuation to remove
 static const string punctuations = ",;:]}[{|}]()`~&!@#$%^*";
@@ -725,30 +725,33 @@ int main() {
 
 	// 920000 is a function of the max number of combos for each product * the number of products
 	all_combinations.reserve(920000);
-	Product amazon("Amazon", "amd ryzen 7 eight core 1700x 3.80ghz socket am4 processor retail");
-	Product newegg("Walmart", "amd ryzen 7 1700x 8 core am4 cpu/processor");
-	Product something("Newegg", "amd ryzen 7 1700x 3.4ghz 16mb l3 processor");
-	Product another("TigerDirect", "amd ryzen 7 1700x 95 w 8 core/16 threads 3.8ghz 4mb cpu black");
-	Product x("X", "amd ryzen 7 1700x 95 w 8 core/16 threads 3.8ghz 4mb cpu black");
-	Product y("Y", "md ryzen 7 1700x 8 core 16 thread am4 cpu/processor");
-	Product z("Z", "wof processor amd ryzen 7 1700x 8 x 3.4 ghz octa c");
-	Product a("A", "amd ryzen 7 1700x cpu am4 3.4ghz 3.8 turbo 8 core 95w 20mb cac");
-	Product b("B", "amd prozessor cpu ryzen 7 sockel am4 1700x 8 x 3 4 ghz 16 mb 95w 14nm box yd170xbcaewof");
-	Product c("C", "intel core intel core i7 7700 processor 8m cache up to 4.20 ghz");
-	Product d("D", "intel core i7 7700 3.60ghz s1151 8mb cache kaby lake cpu");
+	
+	// Product amazon("Amazon", "amd ryzen 7 eight core 1700x 3.80ghz socket am4 processor retail");
+	// Product newegg("Walmart", "amd ryzen 7 1700x 8 core am4 cpu/processor");
+	// Product something("Newegg", "amd ryzen 7 1700x 3.4ghz 16mb l3 processor");
+	// Product another("TigerDirect", "amd ryzen 7 1700x 95 w 8 core/16 threads 3.8ghz 4mb cpu black");
+	// Product y("Y", "amd ryzen 7 1700x 8 core 16 thread am4 cpu/processor");
+	// Product z("Z", "processor amd ryzen 7 1700x 3.4 ghz octa");
+	// Product a("A", "amd ryzen 7 1700x cpu am4 3.4ghz 3.8 turbo 8 core 95w 20mb cache");
+	// Product c("C", "intel core i7 7700 processor 8mb cache 4.20 ghz");
+	// Product d("D", "intel core i7 7700 3.60ghz  8mb cache kaby lake cpu");
+
+	Product amazon("Amazon", "TaoTronics Hybrid Active Noise Cancelling Headphones[2019 New Version] Bluetooth Headphones SoundSurge 46 Over Ear Headphones Headset with Deep Bass, Fast Charge 30 Hour Playtime for Travel Work TV PC");
+	Product something("Walmart", "TaoTronics Hybrid Active Noise Cancelling Headphones [2019 New Version] Bluetooth Headphones Over Ear Headphones Headset with");
+	Product newegg("Newegg", "[UL LISTED] OMNIHIL 6.5FT USB-Adapter Compatible with Luxe Makeup Brush Cleaner / TaoTronics Noise Cancelling Headsets-TT-BH036, TT-BH20US, TT-BH060,TT-BH22,TT-BH028US");
+	Product another("B&H", "TaoTronics TT-BH07 Wireless Bluetooth In-Ear Headphones (Black)");
+	Product y("Ebay", "NEW TaoTronics Active Noise Cancelling Headphones 2019 Upgrade Bluetooth 5.0");
+	Product z("Ebay", "TaoTronics Hybrid Active Noise Cancelling Headphones [2019 New Version] Over 30");
 
 	amazon.execute();
 	newegg.execute();
 	something.execute();
 	another.execute();
-	x.execute();
 	y.execute();
 	z.execute();
-	a.execute();
-	b.execute();
-	c.execute();
-	d.execute();
-
+	// a.execute();
+	// c.execute();
+	// d.execute();
 	for (int i = 0; i < 5; i++) {
 		semantics_weights[i] = (double) all_tokens.size() / semantics_distribution[i];
 		//cout << semantics_weights[i] << endl;
@@ -760,25 +763,21 @@ int main() {
 	newegg.cluster_creation();
 	something.cluster_creation();
 	another.cluster_creation();
-	x.cluster_creation();
 	y.cluster_creation();
 	z.cluster_creation();
-	a.cluster_creation();
-	b.cluster_creation();
-	c.cluster_creation();
-	d.cluster_creation();
+	// a.cluster_creation();
+	// c.cluster_creation();
+	// d.cluster_creation();
 
 	amazon.display();
 	newegg.display();
 	something.display();
 	another.display();
-	x.display();
 	y.display();
 	z.display();
-	a.display();
-	b.display();
-	c.display();
-	d.display();
+	// a.display();
+	// c.display();
+	// d.display();
 
 	cout << "__________________" << endl;
 
@@ -786,7 +785,6 @@ int main() {
 	auto duration = chrono::duration_cast<chrono::milliseconds>(stop - start);
 	cout << duration.count() << endl;
 	cout << K << endl;
-	cout << semantics_distribution[2] << endl;
 
 	return 1;
 }
