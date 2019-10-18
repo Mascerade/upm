@@ -20,8 +20,3 @@ This algorithm aims to solve the issue of how to deal with discrepincies among p
 # Reality
 
 In contrast to the aim of this algorithm, it doesn't actually do its job. For example, running the algorithm on the set of data provided by the authors, it is very inaccurate, and it is not my implementation. I acheived similar, if not identical results using the author's algorithm, which can be found at https://github.com/lakritidis/UPM-full
-
-
-# UPDATE
-
-UPM HAS LIFE. After a multitude of testing, I have come to the conclusion that with some optimizations, UPM can become  a production level algorithm. Will be tinkering with it for the next couple days/weeks...
