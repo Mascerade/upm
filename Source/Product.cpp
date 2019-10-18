@@ -24,6 +24,8 @@ class Combination;
 // The attributes that are used to determine if a specific token is an attribute
 static const string attributes[] = {"bytes", "hz", "bps", "meters","gb", "mb", "tb", "kb", "km", "kilometers", "w", "\"", "'"};
 
+static const string useless_tokens[] = {"with", "for", "of", "it"};
+
 // Punctuation to remove
 static const string punctuations = ",;:]}[{|}]()`~&!@#$%^*";
 
@@ -218,6 +220,25 @@ class Product {
 			this->title = title;
 			this->preparation();
 		}
+		
+		void preparation() {
+			// Runs the necessary functions to generate tokens and correctly format them according to UPM 
+			Combinations.reserve(61000);
+			generate_tokens();
+			token_concatenator();
+			generate_token_objects();
+			lt += Tokens.size();
+			lprod += 1;
+			lt_avg = (double) lt / lprod;
+			K = lt_avg / 2;
+			semantic2 = 0;
+		}
+
+		void execute() {
+			// Does the main algorithmic processes
+			generate_token_map();
+			generate_combinations(K);
+		}
 
 		void generate_tokens() {
 			// Appends the tokens tokenized_title vector
@@ -279,7 +300,17 @@ class Product {
 		void generate_token_objects() {
 			// For every string token in the tokenized_title, send it to add and put the return value in Tokens
 			for (string token_value : tokenized_title) {
-				Tokens.push_back(add_token(token_value));
+				bool add = true;
+
+				for (string useless : useless_tokens) {
+					if (token_value == useless) {
+						add = false;	
+					}
+				}
+
+				if (add) {
+					Tokens.push_back(add_token(token_value));
+				}
 			}
 
 			while (Tokens.size() > MAX_TOKENS) {
@@ -667,25 +698,6 @@ class Product {
 			}
 		}
 
-		void preparation() {
-			// Runs the necessary functions to generate tokens and correctly format them according to UPM 
-			Combinations.reserve(61000);
-			generate_tokens();
-			token_concatenator();
-			generate_token_objects();
-			lt += Tokens.size();
-			lprod += 1;
-			lt_avg = (double) lt / lprod;
-			K = lt_avg / 2;
-			semantic2 = 0;
-		}
-
-		void execute() {
-			// Does the main algorithmic processes
-			generate_token_map();
-			generate_combinations(K);
-		}
-
 		void cluster_creation() {
 			double new_score;
 			for (Combination* c : Combinations) {
@@ -728,27 +740,34 @@ int main() {
 	
 	// Product amazon("Amazon", "amd ryzen 7 eight core 1700x 3.80ghz socket am4 processor retail");
 	// Product newegg("Walmart", "amd ryzen 7 1700x 8 core am4 cpu/processor");
-	// Product something("Newegg", "amd ryzen 7 1700x 3.4ghz 16mb l3 processor");
-	// Product another("TigerDirect", "amd ryzen 7 1700x 95 w 8 core/16 threads 3.8ghz 4mb cpu black");
+	// Product walmart("Newegg", "amd ryzen 7 1700x 3.4ghz 16mb l3 processor");
+	// Product bh("TigerDirect", "amd ryzen 7 1700x 95 w 8 core/16 threads 3.8ghz 4mb cpu black");
 	// Product y("Y", "amd ryzen 7 1700x 8 core 16 thread am4 cpu/processor");
 	// Product z("Z", "processor amd ryzen 7 1700x 3.4 ghz octa");
 	// Product a("A", "amd ryzen 7 1700x cpu am4 3.4ghz 3.8 turbo 8 core 95w 20mb cache");
 	// Product c("C", "intel core i7 7700 processor 8mb cache 4.20 ghz");
 	// Product d("D", "intel core i7 7700 3.60ghz  8mb cache kaby lake cpu");
 
-	Product amazon("Amazon", "TaoTronics Hybrid Active Noise Cancelling Headphones[2019 New Version] Bluetooth Headphones SoundSurge 46 Over Ear Headphones Headset with Deep Bass, Fast Charge 30 Hour Playtime for Travel Work TV PC");
-	Product something("Walmart", "TaoTronics Hybrid Active Noise Cancelling Headphones [2019 New Version] Bluetooth Headphones Over Ear Headphones Headset with");
-	Product newegg("Newegg", "[UL LISTED] OMNIHIL 6.5FT USB-Adapter Compatible with Luxe Makeup Brush Cleaner / TaoTronics Noise Cancelling Headsets-TT-BH036, TT-BH20US, TT-BH060,TT-BH22,TT-BH028US");
-	Product another("B&H", "TaoTronics TT-BH07 Wireless Bluetooth In-Ear Headphones (Black)");
-	Product y("Ebay", "NEW TaoTronics Active Noise Cancelling Headphones 2019 Upgrade Bluetooth 5.0");
-	Product z("Ebay", "TaoTronics Hybrid Active Noise Cancelling Headphones [2019 New Version] Over 30");
+	// Product amazon("Amazon", "TaoTronics Hybrid Active Noise Cancelling Headphones[2019 New Version] Bluetooth Headphones SoundSurge 46 Over Ear Headphones Headset with Deep Bass, Fast Charge 30 Hour Playtime for Travel Work TV PC");
+	// Product newegg("Newegg", "[UL LISTED] OMNIHIL 6.5FT USB-Adapter Compatible with Luxe Makeup Brush Cleaner / TaoTronics Noise Cancelling Headsets-TT-BH036, TT-BH20US, TT-BH060,TT-BH22,TT-BH028US");
+	// Product walmart("Walmart", "TaoTronics Hybrid Active Noise Cancelling Headphones [2019 New Version] Bluetooth Headphones Over Ear Headphones Headset with");
+	// Product bh("B&H", "TaoTronics TT-BH07 Wireless Bluetooth In-Ear Headphones (Black)");
+	// Product ebay1("Ebay", "NEW TaoTronics Active Noise Cancelling Headphones 2019 Upgrade Bluetooth 5.0");
+	// Product ebay2("Ebay", "TaoTronics Hybrid Active Noise Cancelling Headphones [2019 New Version] Over 30");
+
+	Product amazon("Amazon", "LG Electronics OLED65C8P 65-Inch 4K Ultra HD Smart OLED TV (2018 Model)");
+	Product newegg("Newegg", "LG C8 65\" OLED 4K HDR Dolby Atmos Smart TV with AI ThinQ OLED65C8PUA");
+	Product walmart("Walmart", "Recertified LG 65\" Class OLED C8 Series 4K (2160P) HDR Smart TV w/AI ThinQ - (OLED65C8PUA)");
+	Product bh("B&H", "LG C9PUA 65\" Class HDR 4K UHD Smart OLED TV");
+	Product ebay1("Ebay", "LG OLED65C8P 65\" HDR UHD Smart OLED TV");
+	Product ebay2("Ebay", "LG OLED65C8P 65\" 2018 OLED 4K UHD HDR Smart TV ThinQ New");
 
 	amazon.execute();
 	newegg.execute();
-	something.execute();
-	another.execute();
-	y.execute();
-	z.execute();
+	walmart.execute();
+	bh.execute();
+	ebay1.execute();
+	ebay2.execute();
 	// a.execute();
 	// c.execute();
 	// d.execute();
@@ -761,20 +780,21 @@ int main() {
 	
 	amazon.cluster_creation();
 	newegg.cluster_creation();
-	something.cluster_creation();
-	another.cluster_creation();
-	y.cluster_creation();
-	z.cluster_creation();
+	walmart.cluster_creation();
+	bh.cluster_creation();
+	ebay1.cluster_creation();
+	ebay2.cluster_creation();
 	// a.cluster_creation();
 	// c.cluster_creation();
 	// d.cluster_creation();
 
+	cout << endl;
 	amazon.display();
 	newegg.display();
-	something.display();
-	another.display();
-	y.display();
-	z.display();
+	walmart.display();
+	bh.display();
+	ebay1.display();
+	ebay2.display();
 	// a.display();
 	// c.display();
 	// d.display();
