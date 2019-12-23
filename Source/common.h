@@ -1,6 +1,6 @@
 #include <vector>
-#include <token.h>
-#include <combination.h>
+#include "token.h"
+#include "combination.h"
 #include <unordered_map>
 using namespace std;
 
@@ -8,7 +8,7 @@ using namespace std;
 class Common {
     public:
         // The attributes that are used to determine if a specific token is an attribute
-        static const string attributes[];
+        static const string attributes[13];
 
         static const string useless_tokens[];
 

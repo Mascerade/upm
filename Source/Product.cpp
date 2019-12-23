@@ -13,6 +13,8 @@ Created by: Jason Acheampong
 #include <unordered_map>
 #include <chrono>
 #include <math.h>
+#include "common.h"
+
 using namespace std;
 
 long long int factorial(int);
