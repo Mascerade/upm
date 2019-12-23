@@ -1,3 +1,5 @@
+#pragma once
+
 #include <vector>
 #include "token.h"
 #include "combination.h"

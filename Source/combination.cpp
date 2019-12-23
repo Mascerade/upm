@@ -8,3 +8,4 @@ Combination::Combination(vector<Token*> vec, int hash, int length_of_combo) {
     id = hash;
     frequency = 1;
     lc = length_of_combo;
+}

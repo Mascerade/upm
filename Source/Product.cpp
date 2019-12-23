@@ -14,14 +14,14 @@ Created by: Jason Acheampong
 #include <chrono>
 #include <math.h>
 #include "common.h"
+#include "token.h"
+#include "combination.h"
 
 using namespace std;
 
 long long int factorial(int);
 long long int n_combinations(int, int);
 
-class Token;
-class Combination;
 
 // The attributes that are used to determine if a specific token is an attribute
 static const string attributes[] = {"bytes", "hz", "bps", "meters","gb", "mb", "tb", "kb", "km", "kilometers", "w", "\"", "'"};
@@ -75,116 +75,6 @@ double const b = 1.0;
 
 // Used to determine which tokens are semantic 2
 int semantic2 = 0;
-
-
-class Combination {
-	// Stores the attributes that a combination has according to UPM[4 - 5]
-	public:
-		int id; // The hash of the combination
-		int frequency; // The amount of times the combination occurs throughout all the product titles
-		vector<Token*> tokens; // The vecotr of Tokens that the combination contains
-		double dacc; 
-		double dacc_avg;
-		int lc;
-
-		Combination(vector<Token*> vec, int hash, int length_of_combo) {
-			tokens = vec;
-			id = hash;
-			frequency = 1;
-			lc = length_of_combo;
-		}
-};
-
-class Token {
-	hash<string> str_hash;
-	public:
-		int id;
-		int frequency;
-		string value;
-		int semantic;
-	
-	Token(string value) {
-		this->value = value;
-		this->id = str_hash(value);
-		this->define_semantic();
-		frequency = 0;
-	}
-
-
-	/* 
-	Type Semantics Identification Rule/s - As defined by UPM[4]
-	* The numbers in parenthesis represent 
-	Attribute: (1) Numeric tokens followed by measurement units, or mixed tokens ending in a measurement unit
-	
-	Model: (2) The first mixed token in the title which does not represent an attribute
-	
-	Model: (3) All the rest mixed tokens in the title which do not represent an attribute
-	
-	Model: (4) A numeric token which is not followed by a measurement unit
-	
-	Normal: (5) All the other tokens of the title
-	*/
-
-	void define_semantic() {
-		// If all of the characters are number, then it most likely represents an item model (UPM[4])
-		if (all_of(value.begin(), value.end(), ::isdigit)) {
-			
-			// Numeric but not attribute
-			semantic = 4;
-			semantics_distribution[3]++;
-			return;
-		}
-
-		// If the string has the attribute in it and the character
-		// before the attribute is a digit, consider it an attribute (UPM[4])
-		for (string attribute : attributes){
-			int found = value.find(attribute);
-			if (found != value.npos) {
-				if (isdigit(value[found - 1])){
-
-					// Token represents an attribute
-					semantic = 1;
-					semantics_distribution[0]++;
-					return;
-				}
-			}
-		}
-
-		// If its not an attribute, but it has a combination
-		// of both numbers and characters, consider it an item model (UPM[4])
-		for (char character : value) {
-			int digits = 0;
-			if (isdigit(character)) {
-				digits += 1;
-			}
-
-			if (digits > 0) {
-				// Mix of characters and numbers, but not an attribute
-				if (semantic2 == 0) {
-					semantic = 2;
-					semantic2++;
-					semantics_distribution[1]++;
-				}
-
-				else {
-					semantic = 3;
-					semantics_distribution[2]++;
-				}
-
-				return;
-			}
-
-		}
-
-		// If it is neither an attribute nor an item model, consider it a normal token (UPM[4])
-		semantic = 5;
-		semantics_distribution[4]++;
-	}
-
-	int get_id() {
-		return this->id;
-	}
-};
 
 class Product {
 	

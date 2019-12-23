@@ -1,3 +1,5 @@
+#pragma once
+
 #include <string>
 using namespace std;
 
@@ -9,12 +11,7 @@ class Token {
 		string value;
 		int semantic;
 	
-	Token(string value) {
-		this->value = value;
-		this->id = str_hash(value);
-		this->define_semantic();
-		frequency = 0;
-	}
+	Token(string value);
 
 	void define_semantic();
 

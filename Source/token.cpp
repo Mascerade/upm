@@ -1,5 +1,7 @@
 #include "token.h"
 #include <string.h>
+#include <vector>
+#include <algorithm>
 #include "common.h"
 using namespace std;
 
@@ -26,8 +28,6 @@ Normal: (5) All the other tokens of the title
 */
 
 void Token::define_semantic() {
-    #include <vector>
-    #include <algorithm>
     
     // If all of the characters are number, then it most likely represents an item model (UPM[4])
     if (all_of(value.begin(), value.end(), ::isdigit)) {
