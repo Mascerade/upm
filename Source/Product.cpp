@@ -23,59 +23,6 @@ long long int factorial(int);
 long long int n_combinations(int, int);
 
 
-// The attributes that are used to determine if a specific token is an attribute
-static const string attributes[] = {"bytes", "hz", "bps", "meters","gb", "mb", "tb", "kb", "km", "kilometers", "w", "\"", "'"};
-
-static const string useless_tokens[] = {"with", "for", "of", "it"};
-
-// Punctuation to remove
-static const string punctuations = ",;:]}[{|}]()`~&!@#$%^*";
-
-// Maximum allowed tokens for each title
-int const MAX_TOKENS = 20;
-
-// All the token hashes
-vector<int> token_hashes;
-
-// Stores the token objects without duplicates
-vector<Token> all_tokens;
-
-// Stores EVERY SINGLE combination made
-vector<Combination> all_combinations;
-
-// Stores all the combinations with their hash as their identifier
-unordered_map<int, Combination*> combo_hash_map;
-
-// Total length of titles
-int lt = 0;
-
-// Average length of titles
-double lt_avg = 0.0;
-
-// Average length of combinations
-double lc_avg = 0.0;
-
-// Number of products
-int lprod = 0;
-
-// Value of K for combinations
-int K;
-
-// Array of the distribution of semantics 
-int semantics_distribution[] = {0, 0, 0, 0, 0};
-
-// Array of the weights of the semantics distribution
-double semantics_weights[5];
-
-// Constant a in the algorithm
-double const A = 1.0;
-
-// Constant b in the algorithm
-double const b = 1.0;
-
-// Used to determine which tokens are semantic 2
-int semantic2 = 0;
-
 class Product {
 	
 	public:
@@ -119,17 +66,17 @@ class Product {
 			generate_tokens();
 			token_concatenator();
 			generate_token_objects();
-			lt += Tokens.size();
-			lprod += 1;
-			lt_avg = (double) lt / lprod;
-			K = lt_avg / 2;
-			semantic2 = 0;
+			Common::lt += Tokens.size();
+			Common::lprod += 1;
+			Common::lt_avg = (double) Common::lt / Common::lprod;
+			Common::K = Common::lt_avg / 2;
+			Common::semantic2 = 0;
 		}
 
 		void execute() {
 			// Does the main algorithmic processes
 			generate_token_map();
-			generate_combinations(K);
+			generate_combinations(Common::K);
 		}
 
 		void generate_tokens() {
@@ -143,7 +90,7 @@ class Product {
 			while (getline(check1, temp, ' ') && added < 100) {
 				added++;
 				remove_if(temp.begin(), temp.end(), ::isspace);
-				for(char character : punctuations) {
+				for(char character : Common::punctuations) {
 					temp.erase(remove(temp.begin(), temp.end(), character), temp.end());
 				}
 
@@ -180,7 +127,7 @@ class Product {
 		void token_concatenator() {
 			// Makes sure that attributes that are "alone" are appended to the previous value
 			for(int i = 0; i < tokenized_title.size(); i++) {
-				for(string attribute : attributes) {
+				for(string attribute : Common::attributes) {
 					if(tokenized_title[i] == attribute) {
 						tokenized_title[i - 1].append(attribute);
 						tokenized_title.erase(tokenized_title.begin() + i);
@@ -194,7 +141,7 @@ class Product {
 			for (string token_value : tokenized_title) {
 				bool add = true;
 
-				for (string useless : useless_tokens) {
+				for (string useless : Common::useless_tokens) {
 					if (token_value == useless) {
 						add = false;	
 					}
@@ -205,7 +152,7 @@ class Product {
 				}
 			}
 
-			while (Tokens.size() > MAX_TOKENS) {
+			while (Tokens.size() > Common::MAX_TOKENS) {
 				for (int i = Tokens.size() - 1; i >= 0; i--) {
 					Tokens.erase(Tokens.begin() + i);
 					break;
@@ -217,19 +164,19 @@ class Product {
 			// TODO: Use Hash Map instead of vector to store tokens
 			Token token(token_value);
 			// If the token is already found in the vector of Tokens, increase the freqency and return the token to be added into the Tokens vector of the product
-			for (int i = 0; i < token_hashes.size(); i++) {
-				if (token_hashes[i] == token.id) {
-					all_tokens[i].frequency++;
-					return &all_tokens[i];
+			for (int i = 0; i < Common::token_hashes.size(); i++) {
+				if (Common::token_hashes[i] == token.id) {
+					Common::all_tokens[i].frequency++;
+					return &Common::all_tokens[i];
 				}
 			}
 
 			token.frequency++;
-			token_hashes.push_back(token.id);
-			Token* ptr = all_tokens.data();
-			all_tokens.push_back(token);
+			Common::token_hashes.push_back(token.id);
+			Token* ptr = Common::all_tokens.data();
+			Common::all_tokens.push_back(token);
 			ptr++;
-			return &all_tokens[all_tokens.size() - 1];
+			return &Common::all_tokens[Common::all_tokens.size() - 1];
 		}
 
 		void generate_token_map() {
@@ -273,14 +220,14 @@ class Product {
 						Combination comb(toks, comb_id, 2);
 
 						// Add it to the overall vecotor of combinations
-						all_combinations.push_back(comb);
+						Common::all_combinations.push_back(comb);
 
 						// Increase occurance of this particular combination
-						lc_avg += 2;
+						Common::lc_avg += 2;
 
 
-						// The pointer the *points* to the combination in all_combinations
-						Combination* comb_ptr = &all_combinations[all_combinations.size() - 1];
+						// The pointer the *points* to the combination in Common::all_combinations
+						Combination* comb_ptr = &Common::all_combinations[Common::all_combinations.size() - 1];
 
 						// Add the combination pointer to the Combinations* vector of the product
 						Combinations.push_back(add_combination(comb_id, comb_ptr, distance));
@@ -316,12 +263,12 @@ class Product {
 
 							Combination comb(toks, comb_id, 3);
 
-							all_combinations.push_back(comb);
+							Common::all_combinations.push_back(comb);
 							
 							// Increase occurance of this particular combination
-							lc_avg += 3;
+							Common::lc_avg += 3;
 
-							Combination* comb_ptr = &all_combinations[all_combinations.size() - 1];
+							Combination* comb_ptr = &Common::all_combinations[Common::all_combinations.size() - 1];
 							
 							Combinations.push_back(add_combination(comb_id, comb_ptr, distance));
 						}
@@ -364,10 +311,10 @@ class Product {
 								Combination comb(toks, comb_id, 4);
 						
 								// Increase occurance of this particular combination
-								lc_avg += 4;
+								Common::lc_avg += 4;
 								
-								all_combinations.push_back(comb);
-								Combination* comb_ptr = &all_combinations[all_combinations.size() - 1];
+								Common::all_combinations.push_back(comb);
+								Combination* comb_ptr = &Common::all_combinations[Common::all_combinations.size() - 1];
 								Combinations.push_back(add_combination(comb_id, comb_ptr, distance));
 							}
 						}
@@ -412,12 +359,12 @@ class Product {
 									distance = sqrt(pow(i, 2) + pow(j - 1, 2) + pow(l - 2, 2) + pow(m - 3, 2) + pow(n - 4, 2));
 
 									Combination comb(toks, comb_id, 5);
-									all_combinations.push_back(comb);
+									Common::all_combinations.push_back(comb);
 									
 									// Increase occurance of this particular combination
-									lc_avg += 5;
+									Common::lc_avg += 5;
 									
-									Combination* comb_ptr = &all_combinations[all_combinations.size() - 1];
+									Combination* comb_ptr = &Common::all_combinations[Common::all_combinations.size() - 1];
 									Combinations.push_back(add_combination(comb_id, comb_ptr, distance));
 								}
 							}
@@ -466,12 +413,12 @@ class Product {
 										distance = sqrt(pow(i, 2) + pow(j - 1, 2) + pow(l - 2, 2) + pow(m - 3, 2) + pow(n - 4, 2) + pow(o - 5, 2));
 
 										Combination comb(toks, comb_id, 6);
-										all_combinations.push_back(comb);
+										Common::all_combinations.push_back(comb);
 										
 										// Increase occurance of this particular combination
-										lc_avg += 6;
+										Common::lc_avg += 6;
 
-										Combination* comb_ptr = &all_combinations[all_combinations.size() - 1];
+										Combination* comb_ptr = &Common::all_combinations[Common::all_combinations.size() - 1];
 										Combinations.push_back(add_combination(comb_id, comb_ptr, distance));
 									}
 								}
@@ -525,12 +472,12 @@ class Product {
 											distance = sqrt(pow(i, 2) + pow(j - 1, 2) + pow(l - 2, 2) + pow(m - 3, 2) + pow(n - 4, 2) + pow(o - 5, 2) + pow(p - 6, 2));
 
 											Combination comb(toks, comb_id, 7);
-											all_combinations.push_back(comb);
+											Common::all_combinations.push_back(comb);
 											
 											// Increase occurance of this particular combination
-											lc_avg += 7;
+											Common::lc_avg += 7;
 
-											Combination* comb_ptr = &all_combinations[all_combinations.size() - 1];
+											Combination* comb_ptr = &Common::all_combinations[Common::all_combinations.size() - 1];
 											Combinations.push_back(add_combination(comb_id, comb_ptr, distance));
 										}
 									}
@@ -545,21 +492,21 @@ class Product {
 		Combination* add_combination(int hash, Combination* combo, double distance) {
 
 			// If the hash is not in the map (meaning the combo isn't either); insert it
-			if (combo_hash_map.count(hash) == 0) {
+			if (Common::combo_hash_map.count(hash) == 0) {
 				combo->dacc = distance;
 
 				// For each combination in the combo_hash_map, compute the average distance by multiplying it by dividing it by its frequency
 				combo->dacc_avg = distance;
 
 				// Insert the new combination into the combination hash map
-				combo_hash_map.insert({hash, combo});
+				Common::combo_hash_map.insert({hash, combo});
 
 				return combo;
 			}
 
 			// If the hash is found (meaning the combo as well) increase the frequency
 			else {
-				Combination* t = combo_hash_map[hash];
+				Combination* t = Common::combo_hash_map[hash];
 				t->frequency++;
 				t->dacc += distance;
 
@@ -573,8 +520,8 @@ class Product {
 			double sum = 0;
 			for (Token* t : c->tokens) {
 
-				// log(lprod / t->frequency) is 0 when log(1)
-				sum += (double) ( (double) log( (double) lprod / t->frequency) ) * (double) semantics_weights[t->semantic] / (double) ( (1 - b) + ( (double) ( (double) (b*K) / (double) lc_avg)));
+				// log(Common::lprod / t->frequency) is 0 when log(1)
+				sum += (double) ( (double) log( (double) Common::lprod / t->frequency) ) * (double) Common::semantics_weights[t->semantic] / (double) ( (1 - Common::b) + ( (double) ( (double) (Common::b*Common::K) / (double) Common::lc_avg)));
 			}
 
 			// cout << sum << endl;
@@ -595,7 +542,7 @@ class Product {
 			for (Combination* c : Combinations) {
 				// /cout << (double) pow(yc(c), 2) << endl;
 				// cout << (double) ( (double) pow(yc(c), 2)) / (double) (A + c->dacc_avg) << endl;
-				new_score = (double) ( (double) pow(yc(c), 2) / (double) (A + c->dacc_avg)) * (double) log(c->frequency);
+				new_score = (double) ( (double) pow(yc(c), 2) / (double) (Common::A + c->dacc_avg)) * (double) log(c->frequency);
 				//cout << new_score << endl;
 				if (new_score > high_score) {
 					high_score = new_score;
@@ -625,10 +572,10 @@ long long int n_combinations(int n, int r) {
 int main() {
 	// Reserving 500 "spots" of memory so that it doesn't change the position of the values for 500 values
 	auto start = chrono::high_resolution_clock::now();
-	all_tokens.reserve(500);
+	Common::all_tokens.reserve(500);
 
 	// 920000 is a function of the max number of combos for each product * the number of products
-	all_combinations.reserve(920000);
+	Common::all_combinations.reserve(920000);
 
 	Product amazon("Amazon", "LG Electronics OLED65C8P 65-Inch 4K Ultra HD Smart OLED TV (2018 Model)");
 	Product newegg("Newegg", "LG C8 65\" OLED 4K HDR Dolby Atmos Smart TV with AI ThinQ OLED65C8PUA");
@@ -647,11 +594,11 @@ int main() {
 	// c.execute();
 	// d.execute();
 	for (int i = 0; i < 5; i++) {
-		semantics_weights[i] = (double) all_tokens.size() / semantics_distribution[i];
+		Common::semantics_weights[i] = (double) Common::all_tokens.size() / Common::semantics_distribution[i];
 		//cout << semantics_weights[i] << endl;
 	}
 
-	lc_avg = (double) lc_avg / all_combinations.size();
+	Common::lc_avg = (double) Common::lc_avg / Common::Common::all_combinations.size();
 
 	amazon.cluster_creation();
 	newegg.cluster_creation();
@@ -679,7 +626,7 @@ int main() {
 	auto stop = chrono::high_resolution_clock::now();
 	auto duration = chrono::duration_cast<chrono::milliseconds>(stop - start);
 	cout << duration.count() << endl;
-	cout << K << endl;
+	cout << Common::K << endl;
 	
 	return 1;
 }

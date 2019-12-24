@@ -12,7 +12,7 @@ class Common {
         // The attributes that are used to determine if a specific token is an attribute
         static const string attributes[13];
 
-        static const string useless_tokens[];
+        static const string useless_tokens[4];
 
         // Punctuation to remove
         static const string punctuations;
