@@ -62,4 +62,10 @@ class Common {
         // Used to determine which tokens are semantic 2
         static int semantic2;
 
+        // Returns the factorial of num (num!)
+        long long int factorial(int num);
+
+        // Returns the nCr of n and r (the number of combinations between n and r)
+        long long int n_combinations(int n, int r);
+
 };

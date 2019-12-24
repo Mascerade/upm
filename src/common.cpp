@@ -52,3 +52,19 @@ double const Common::b = 1.0;
 
 // Used to determine which tokens are semantic 2
 int Common::semantic2 = 0;
+
+// Returns the factorial of num (num!)
+long long int Common::factorial(int num) {
+	// Takes a number and return !num
+	long long int number = 1;
+	for (int x = num; x > 0; x--) {
+		number *= num;
+	}
+	return number;
+}
+
+// Returns the nCr of n and r (the number of combinations between n and r)
+long long int Common::n_combinations(int n, int r) {
+	// Returns nCr
+	return Common::factorial(n) / (Common::factorial(r) * Common::factorial(n - r));
+}

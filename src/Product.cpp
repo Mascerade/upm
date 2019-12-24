@@ -19,9 +19,6 @@ Created by: Jason Acheampong
 
 using namespace std;
 
-long long int factorial(int);
-long long int n_combinations(int, int);
-
 
 class Product {
 	
@@ -553,21 +550,6 @@ class Product {
 			}
 		}
 };
-
-long long int factorial(int num) {
-	// Takes a number and return !num
-	long long int number = 1;
-	for (int x = num; x > 0; x--) {
-		number *= num;
-	}
-	return number;
-}
-
-long long int n_combinations(int n, int r) {
-	// Returns nCr
-	return factorial(n) / (factorial(r) * factorial(n - r));
-}
-
 
 int main() {
 	// Reserving 500 "spots" of memory so that it doesn't change the position of the values for 500 values
