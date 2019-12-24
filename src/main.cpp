@@ -42,9 +42,7 @@ int main() {
 	bh.execute();
 	ebay1.execute();
 	ebay2.execute();
-	// a.execute();
-	// c.execute();
-	// d.execute();
+
 	for (int i = 0; i < 5; i++) {
 		Common::semantics_weights[i] = (double) Common::all_tokens.size() / Common::semantics_distribution[i];
 		//cout << semantics_weights[i] << endl;
@@ -58,9 +56,6 @@ int main() {
 	bh.cluster_creation();
 	ebay1.cluster_creation();
 	ebay2.cluster_creation();
-	// a.cluster_creation();
-	// c.cluster_creation();
-	// d.cluster_creation();
 
 	cout << endl;
 	amazon.display();
@@ -69,9 +64,6 @@ int main() {
 	bh.display();
 	ebay1.display();
 	ebay2.display();
-	// a.display();
-	// c.display();
-	// d.display();
 
 	cout << "__________________" << endl;
 

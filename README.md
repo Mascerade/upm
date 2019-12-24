@@ -5,9 +5,18 @@ A product matching algorithm that groups products into clusters of similarity ba
 Based on the paper "Unsupervised Product Matching Using Combinations and Permutations" by Leonidas Akritidis, Athanasios Fevgas, Panayiotis Bozanis and Christos Makris
 https://arxiv.org/pdf/1903.04276.pdf
 
+# Structure of Project
+`bin` - Contains the executables <br>
+`build` - Contains the object files (`.o`) <br>
+`include` - Contains the header files <br>
+`src` - Contains the C++ code <br>
+`build.bat` - Builds the project and creates the `main.exe` file in `bin` <br>
+\* Change the directory to the build directory `build.bat` for your system
+
+
 # How to Use
 
-Simply create a Product object that takes the vendor (the retailer to which the product is associated). The vendor parameter is a **string**. The next parameter is the title of the product, which is also a **string**.
+Simply create a Product object that takes the vendor (the retailer to which the product is associated). The vendor parameter is a **string**. The next parameter is the title of the product, which is also a **string**. See `main.cpp` to see the test code.
 
 # How it Works
 
