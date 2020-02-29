@@ -10,8 +10,9 @@ https://arxiv.org/pdf/1903.04276.pdf
 `build` - Contains the object files (`.o`) <br>
 `include` - Contains the header files <br>
 `src` - Contains the C++ code <br>
-`build.bat` - Builds the project and creates the `main.exe` file in `bin` <br>
-\* Change the directory to the build directory `build.bat` for your system
+`build.bat` - Builds the project and creates the `main.exe` file in `bin` **(for Windows)** <br>
+`build.sh` - Builds the project and creates the `main.exe` file in `bin` **(for Ubuntu)** <br>
+\* Change the directory to the build directory `build.bat` or `build.sh` for your system
 
 
 # How to Use
