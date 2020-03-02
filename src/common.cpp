@@ -1,7 +1,7 @@
 #include "common.h"
 
 // The attributes that are used to determine if a specific token is an attribute
-const string Common::attributes[] = {"bytes", "hz", "bps", "meters","gb", "mb", "tb", "kb", "km", "kilometers", "w", "\"", "'"};
+const string Common::attributes[] = {"bytes", "hz", "bps", "meters","gb", "mb", "tb", "kb", "km", "kilometers", "w", "\"", "'", "p"};
 
 const string Common::useless_tokens[] = {"with", "for", "of", "it"};
 

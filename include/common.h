@@ -10,7 +10,7 @@ using namespace std;
 class Common {
     public:
         // The attributes that are used to determine if a specific token is an attribute
-        static const string attributes[13];
+        static const string attributes[14];
 
         static const string useless_tokens[4];
 
